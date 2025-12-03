@@ -1,0 +1,7 @@
+/docker/mysql/data/
+./docker/mysql/data/server-key.pem
+./docker/mysql/data/ca-key.pem
+./docker/mysql/data/client-key.pem
+./docker/mysql/data/private_key.pem
+/docker/mysql/data/*.pem
+/vendor/
