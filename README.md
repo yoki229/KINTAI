@@ -20,13 +20,13 @@ mysql:
 
 ### Laravel 環境構築
 
-1. `docker-compose exec php bash`(phpコンテナ名が違う場合は適宜変更)
+1. `docker-compose exec php bash`(php コンテナ名が違う場合は適宜変更)
 2. `composer install`
-    `composer require --dev phpunit/phpunit`
-    `exit`
+   `composer require --dev phpunit/phpunit`
+   `exit`
 3. `cp src/.env.example src/.env`
    (.env.example ファイルから.env を作成)
-4. .envファイルの環境変数を変更
+4. .env ファイルの環境変数を変更
 
 ```
 DB_CONNECTION=mysql
@@ -46,24 +46,32 @@ MAIL_FROM_ADDRESS=info@example.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-Stripe決済用のAPIキーはhttps://stripe.com/jp（Stripe公式HP）
-のダッシュボードより取得し、.envの一番下に下記の形で記入すること。
-```
-STRIPE_PUBLIC_KEY=pk_test_*****
-STRIPE_SECRET_KEY=sk_test_*****
-```
-
 5. アプリケーションキーの作成
 
 ```
 docker-compose exec php bash
 php artisan key:generate
+```
+
+6. マイグレーションの実行
+
+```
+php artisan migrate
+```
+
+7. シーディングの実行
+
+```
+php artisan db:seed
 exit
 ```
 
-6. `cp src/.env src/.env.testing`
+### PHPUnit を利用したテスト用 DB を作成
+
+1. `cp src/.env src/.env.testing`
    (.env ファイルから.env.testing を作成)
-7. .env.testingファイルの環境変数を変更
+2. .env.testing ファイルの環境変数を変更
+
 ```
 APP_ENV=test
 APP_KEY=base64:******
@@ -78,35 +86,29 @@ DB_USERNAME=root
 DB_PASSWORD=root
 ```
 
-8. MySQLコンテナに入ってテスト用DBを作成
+3. MySQL コンテナに入ってテスト用 DB を作成
+
 ```
 docker-compose exec mysql mysql -u root -p
 # パスワードは root
 CREATE DATABASE test_db;
-SHOW TABLES;
+SHOW DATABASES;
 EXIT;
 docker-compose exec php bash
 php artisan migrate --env=testing
 ```
 
-9. マイグレーションの実行
-
-```
-php artisan migrate
-```
-
-10. シーディングの実行
-
-```
-php artisan db:seed
-```
-
-11. シンボリックリンクの作成
+### シンボリックリンクの作成
 
 ```
 php artisan storage:link
 exit
 ```
+
+## メール認証について
+
+メール認証機能は mailHog を使用しています。
+メール送信後は URL localhost:8025 から確認できるようにしております。
 
 ## 使用技術
 
