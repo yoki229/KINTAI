@@ -1,13 +1,9 @@
-@section('css')
-<link rel="stylesheet" href="{{ asset('/css/layouts/header.css')  }}">
-@endsection
 
 @section('header')
-    <!-- ヘッダー -->
     <header class="header">
         <div class="header-nav__logo">
             <a class="header-nav__logo-link" href="/attendance">
-                <img src="{{ asset('images/logo.svg') }}" alt="COACHTECH" class="header__img">
+                <img src="{{ asset('images/CoachTech_White 1.png') }}" alt="COACHTECH" class="header__img">
             </a>
         </div>
 

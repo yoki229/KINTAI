@@ -5,13 +5,17 @@
 
 <!-- css読み込み -->
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/auth/verify.css')  }}">
+<link rel="stylesheet" href="{{ asset('css/layouts/header.css') }}">
+<link rel="stylesheet" href="{{ asset('css/auth/verify_email.css')  }}">
+@endsection
+
+<!-- header読み込み -->
+@section('header')
+    @include('layouts.header')
 @endsection
 
 <!-- 本体 -->
 @section('content')
-
-@include('layouts.header')
 
 {{-- 未認証時のメッセージ --}}
 @if(session('message'))

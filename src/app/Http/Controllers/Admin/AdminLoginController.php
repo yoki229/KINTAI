@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminLoginController extends Controller
 {
-    public function loginForm()
+    public function adminLoginForm()
     {
-        return view('admin.login.form');
+        return view('auth/admin_login');
     }
 
-    public function login(Request $request)
+    public function adminLoginPost(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -24,7 +24,7 @@ class AdminLoginController extends Controller
         if (Auth::guard('admin')->attempt(
             $request->only('email', 'password') + ['role' => 'admin']
         )) {
-            return redirect('/admin/attendance/list');
+            return redirect('admin/attendance/list');
         }
 
         return back()->withErrors([

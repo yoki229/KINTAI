@@ -30,23 +30,21 @@ use App\Http\Controllers\Admin\CorrectionController;
 // 管理者用
 //Route::middleware(['auth','is_admin'])->group(function () {
     // ログイン画面（管理者）
-    Route::get('/admin/login', [Admin\AdminLoginController::class, 'admin.login.form'])
-    ->name('login.form');
-    Route::post('/admin/login', [Admin\AdminLoginController::class, 'admin.login.post'])
-        ->name('login.post');
+    Route::get('/admin/login', [AdminLoginController::class, 'adminLoginForm']);
+    Route::post('/admin/login', [AdminLoginController::class, 'adminLoginPost']);
 
     // 勤怠一覧画面（管理者）
-    Route::get('/admin/attendance/list', [Admin\AttendanceController::class,'adminList']);
+    Route::get('/admin/attendance/list', [AttendanceController::class,'adminList']);
     // 勤怠詳細画面（管理者）
-    Route::get('admin/attendance/{id}', [Admin\AttendanceController::class,'adminAttendance']);
+    Route::get('admin/attendance/{id}', [AttendanceController::class,'adminAttendance']);
     // スタッフ一覧画面（管理者）
-    Route::get('/admin/staff/list', [Admin\StaffController::class,'adminStaffList']);
+    Route::get('/admin/staff/list', [StaffController::class,'adminStaffList']);
     // スタッフ別勤怠一覧画面（管理者）
-    Route::get('/admin/attendance/staff/{id}', [Admin\StaffController::class,'adminStaffDetail']);
+    Route::get('/admin/attendance/staff/{id}', [StaffController::class,'adminStaffDetail']);
     // 申請一覧画面（管理者）
-    Route::get('/stamp_correction_request/list', [Admin\CorrectionController::class,'adminCorrectionList']);
+    Route::get('/stamp_correction_request/list', [CorrectionController::class,'adminCorrectionList']);
     // 修正申請承認画面（管理者）
-    Route::get('/stamp_correction_request/approve/', [Admin\CorrectionController::class,'adminCorrection']);
+    Route::get('/stamp_correction_request/approve/', [CorrectionController::class,'adminCorrection']);
 //});
 
 // メール認証画面の表示
