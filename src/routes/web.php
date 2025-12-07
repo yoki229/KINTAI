@@ -28,11 +28,11 @@ use App\Http\Controllers\Admin\CorrectionController;
 //});
 
 // 管理者用
-//Route::middleware(['auth','is_admin'])->group(function () {
     // ログイン画面（管理者）
     Route::get('/admin/login', [AdminLoginController::class, 'adminLoginForm']);
     Route::post('/admin/login', [AdminLoginController::class, 'adminLoginPost']);
 
+    // Route::prefix('admin')->name('admin.')->group(function () {
     // 勤怠一覧画面（管理者）
     Route::get('/admin/attendance/list', [AttendanceController::class,'adminList']);
     // 勤怠詳細画面（管理者）

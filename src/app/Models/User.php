@@ -32,8 +32,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AttendanceRecord::class);
     }
 
-    public function isAdmin(): bool
+    public function getIsAdminAttribute(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function getIsUserAttribute()
+    {
+        return $this->role === 'user';
     }
 }
