@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\LoginResponse;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Actions\Fortify\FailedLoginResponse as CustomFailedLoginResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -13,26 +14,15 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 use Laravel\Fortify\Http\Requests\RegisterRequest as FortifyRegisterRequest;
-use Laravel\Fortify\Contracts\RegisterResponse;
-use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\FailedLoginResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     *
-     * @return void
-     */
     public function register()
     {
         //
     }
 
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
     public function boot()
     {
         Fortify::createUsersUsing(CreateNewUser::class);
@@ -51,21 +41,7 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($email . $request->ip());
         });
 
-        //バリデーションを個別Requestにbind
-        $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
-        $this->app->bind(FortifyRegisterRequest::class, RegisterRequest::class);
-
-        //register直後はmypage_profileにリダイレクト
-        $this->app->singleton(RegisterResponse::class, function () {
-            return new class implements RegisterResponse {
-                public function toResponse($request)
-                {
-                    return redirect('/mypage_profile?from=register');
-                }
-            };
-        });
-
-        // LoginResponse をカスタムに置き換え
-        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        // バリデーションをbind
+        app()->bind(FortifyLoginRequest::class, LoginRequest::class);
     }
 }

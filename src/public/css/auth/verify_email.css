@@ -1,0 +1,34 @@
+.message {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 25px;
+    background-color: #ff5555;
+    color: white;
+    padding-left: 30px;
+}
+
+.mail {
+    padding: 150px 0;
+    width: 100%;
+    height: auto;
+    text-align: center;
+}
+
+.text {
+    font-weight: bold;
+}
+
+.send {
+    padding: 10px 15px;
+    margin: 40px 0;
+    border-radius: 8px;
+    border: 1px solid black;
+    background-color: #d9d9d9;
+    font-weight: bold;
+}
+
+.resend {
+    text-decoration: none;
+    color: rgb(19, 153, 255);
+}
