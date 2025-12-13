@@ -10,10 +10,13 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::guard('admin')->check()) {
-            return redirect()->route('admin.login.form');
+        if (Auth::guard('admin')->check()) {
+            return $next($request);
         }
 
-        return $next($request);
+        // 一般ユーザーなら弾く
+        return redirect('/admin/login')->withErrors([
+            'email' => '管理者のみログインできます。',
+        ]);
     }
 }

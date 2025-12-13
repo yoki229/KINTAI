@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 <!-- タイトル -->
-@section('title','勤怠一覧')
+@section('title','管理者用勤怠一覧')
 
 <!-- css読み込み -->
 @section('css')

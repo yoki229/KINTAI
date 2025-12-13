@@ -5,7 +5,6 @@
 
 <!-- css読み込み -->
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/layouts/header.css') }}">
 <link rel="stylesheet" href="{{ asset('css/auth/admin_login.css')}}">
 @endsection
 
@@ -19,7 +18,7 @@
 <div class="login-form">
     <h1 class="login-form__heading content__heading">管理者ログイン</h1>
     <div class="login-form__inner">
-        <form class="login-form__form" action="/login" method="post" novalidate>
+        <form class="login-form__form" action="/admin/login" method="post" novalidate>
         @csrf
 
             {{-- メールアドレス --}}

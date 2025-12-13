@@ -8,6 +8,7 @@
     <title>@yield('title')</title>
     <link rel="stylesheet" href="{{ asset('/css/layouts/sanitize.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/layouts/common.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layouts/header.css') }}">
     @yield('css')
 </head>
 

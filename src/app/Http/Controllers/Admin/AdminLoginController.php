@@ -20,16 +20,30 @@ class AdminLoginController extends Controller
             'password' => 'required',
         ]);
 
+        $credentials = [
+            'email' => $request->email,
+            'password' => $request->password,
+            'role' => 'admin',
+        ];
+
         // role=admin のユーザーだけログインさせる
-        if (Auth::guard('admin')->attempt(
-            $request->only('email', 'password') + ['role' => 'admin']
-        )) {
-            return redirect('admin/attendance/list');
+        if (Auth::guard('admin')->attempt($credentials, $request->filled('remember'))) {
+            return redirect('/admin/attendance/list');
         }
 
         return back()->withErrors([
             'email' => 'ログイン情報が登録されていません',
         ]);
+    }
+
+    public function adminLogout(Request $request)
+    {
+        Auth::guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/admin/login');
     }
 }
 

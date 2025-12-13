@@ -5,7 +5,6 @@
 
 <!-- css読み込み -->
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/layouts/header.css') }}">
 <link rel="stylesheet" href="{{ asset('css/auth/register.css')}}">
 @endsection
 
