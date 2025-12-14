@@ -15,5 +15,13 @@
 
 <!-- 本体 -->
 @section('content')
+<div class="correction_request__inner">
+    <div class="correction_request-content__inner">
+        {{-- タイトル --}}
+        <div class="correction_request__title">
+            <h1 class="title">申請一覧</h1>
+        </div>
+    </div>
 
+</div>
 @endsection
