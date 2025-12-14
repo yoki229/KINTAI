@@ -8,9 +8,10 @@ use Carbon\Carbon;
 
 class AttendanceRecord extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'user_id','work_date','clock_in','clock_out',
-        'break_minutes','break2_minutes','status','note'
+        'user_id','work_date','clock_in','clock_out','status','note'
     ];
 
     protected $casts = [
@@ -18,6 +19,17 @@ class AttendanceRecord extends Model
         'clock_in' => 'datetime:H:i',
         'clock_out' => 'datetime:H:i',
     ];
+
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status) {
+            'off_work' => '勤務外',
+            'working'  => '出勤中',
+            'on_break' => '休憩中',
+            'finished' => '退勤済',
+            default    => '不明',
+        };
+}
 
     public function user()
     {
@@ -27,6 +39,11 @@ class AttendanceRecord extends Model
     public function corrections()
     {
         return $this->hasMany(AttendanceCorrection::class);
+    }
+
+    public function breaks()
+    {
+        return $this->hasMany(BreakRecord::class);
     }
 
     // スコープ：特定月のレコード
@@ -46,19 +63,55 @@ class AttendanceRecord extends Model
     public function getWorkMinutesAttribute()
     {
         if (!$this->clock_in || !$this->clock_out) return 0;
-        $in = Carbon::parse($this->clock_in);
-        $out = Carbon::parse($this->clock_out);
-        $total = $out->diffInMinutes($in);
-        $breaks = ($this->break_minutes ?? 0) + ($this->break2_minutes ?? 0);
-        return max(0, $total - $breaks);
+
+        $total = Carbon::parse($this->clock_in)
+            ->diffInMinutes(Carbon::parse($this->clock_out));
+
+        return max(0, $total - $this->break_minutes);
     }
 
-    // アクセサ：HH:MM 表示
+    // アクセサ：出勤合計時間 HH:MM 表示
     public function getWorkTimeFormattedAttribute()
     {
         $work_minutes = $this->work_minutes;
         $hour = intdiv($work_minutes, 60);
         $mins = $work_minutes % 60;
         return sprintf('%02d:%02d', $hour, $mins);
+    }
+
+    // アクセサ：休憩合計時間（分）
+    public function getBreakMinutesAttribute()
+    {
+        return $this->breaks->sum(function ($break) {
+            if (!$break->break_end) {
+                return 0;
+            }
+
+            return Carbon::parse($break->break_start)
+            ->diffInMinutes(Carbon::parse($break->break_end));
+        });
+    }
+
+    // アクセサ：休憩合計時間 HH:MM 表示
+    public function getBreakTimeFormattedAttribute()
+    {
+        $break_minutes = $this->break_minutes;
+
+        $hour = intdiv($break_minutes, 60);
+        $mins = $break_minutes % 60;
+
+        return sprintf('%02d:%02d', $hour, $mins);
+    }
+
+    // アクセサ：出勤時間 HH:MM 表示
+    public function getClockInFormattedAttribute()
+    {
+        return $this->clock_in ? $this->clock_in->format('H:i') : '-';
+    }
+
+    // アクセサ：退勤時間 HH:MM 表示
+    public function getClockOutFormattedAttribute()
+    {
+        return $this->clock_out ? $this->clock_out->format('H:i') : '-';
     }
 }

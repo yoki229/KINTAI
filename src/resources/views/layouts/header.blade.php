@@ -56,7 +56,7 @@
                     <a href="/attendance" class="list__attendance">勤怠</a>
                 </li>
                 <li>
-                    <a href="/stamp_correction_request/list" class="list__attendance-list">勤怠一覧</a>
+                    <a href="/attendance/list" class="list__attendance-list">勤怠一覧</a>
                 </li>
                 <li>
                     <a href="/stamp_correction_request/list" class="list__stamp-correction-request">申請</a>

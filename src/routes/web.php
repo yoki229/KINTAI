@@ -16,9 +16,13 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::get('/attendance', [AttendanceController::class,'index']);
     // 出勤・退勤・休憩
     Route::post('/attendance/clock-in', [AttendanceController::class,'clockIn']);
+    Route::post('/attendance/break-in', [AttendanceController::class,'breakIn']);
+    Route::post('/attendance/break-out', [AttendanceController::class,'breakOut']);
     Route::post('/attendance/clock-out', [AttendanceController::class,'clockOut']);
     // 勤怠一覧画面（一般ユーザー）
     Route::get('/attendance/list', [AttendanceController::class,'list']);
+    // 勤怠一覧画面（一般ユーザー）月指定用のルート
+    Route::get('/attendance/list', [AttendanceController::class, 'list'])->name('attendance.month');
     // 勤怠詳細画面（一般ユーザー）
     Route::get('/attendance/detail/{id}', [AttendanceController::class,'detail']);
     // 勤怠詳細画面から申請（一般ユーザー）
@@ -44,9 +48,9 @@ Route::middleware(['auth','verified'])->group(function () {
         // スタッフ別勤怠一覧画面（管理者）
         Route::get('/admin/attendance/staff/{id}', [StaffController::class,'adminStaffDetail']);
         // 申請一覧画面（管理者）
-        Route::get('/stamp_correction_request/list', [CorrectionController::class,'adminCorrectionList']);
+        Route::get('/admin/stamp_correction_request/list', [CorrectionController::class,'adminCorrectionList']);
         // 修正申請承認画面（管理者）
-        Route::get('/stamp_correction_request/approve/', [CorrectionController::class,'adminCorrection']);
+        Route::get('/admin/stamp_correction_request/approve', [CorrectionController::class,'adminCorrection']);
     });
 
 // メール認証画面の表示

@@ -19,9 +19,7 @@ class CreateAttendanceRecordsTable extends Migration
             $table->date('work_date');
             $table->time('clock_in')->nullable();
             $table->time('clock_out')->nullable();
-            $table->integer('break_minutes')->default(0);
-            $table->integer('break2_minutes')->default(0);
-            $table->string('status')->default('off_work');     // off_work（未出勤） / working（勤務中） / on_break（休憩中） / finished（退勤済）
+            $table->string('status')->default('off_work');     // off_work（勤務外） / working（出勤中） / on_break（休憩中） / finished（退勤済）
             $table->text('note')->nullable();                  // 備考
             $table->timestamps();
             $table->unique(['user_id','work_date']);           // 同日の重複防止
