@@ -25,8 +25,8 @@
             {{-- 月日メニュー --}}
             <div class="attendance-list__date-menu">
                 <div class="date-menu">
-                    <a href="{{ route('attendance.month', ['month' => $prevMonth]) }}">
-                        ← 前月
+                    <a class="date-menu__month-link" href="{{ route('attendance.month', ['month' => $prevMonth]) }}">
+                        <i class="fa-sharp fa-solid fa-arrow-left"></i> 前月
                     </a>
 
                     <div class="date-menu__center">
@@ -42,8 +42,8 @@
                         </span>
                     </div>
 
-                    <a href="{{ route('attendance.month', ['month' => $nextMonth]) }}">
-                        翌月 →
+                    <a class="date-menu__month-link" href="{{ route('attendance.month', ['month' => $nextMonth]) }}">
+                        翌月 <i class="fa-sharp fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -53,25 +53,25 @@
                 <table class="attendance-list">
                     <thead>
                         <tr>
-                            <th>日付</th>
-                            <th>出勤</th>
-                            <th>退勤</th>
-                            <th>休憩</th>
-                            <th>合計</th>
-                            <th>詳細</th>
+                            <th class="list-header">日付</th>
+                            <th class="list-header">出勤</th>
+                            <th class="list-header">退勤</th>
+                            <th class="list-header">休憩</th>
+                            <th class="list-header">合計</th>
+                            <th class="list-header">詳細</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @forelse ($attendances as $attendance)
                             <tr>
-                                <td>{{ $attendance->work_date->format('m/d') }}</td>
-                                <td>{{ $attendance->clock_in_formatted }}</td>
-                                <td>{{ $attendance->clock_out_formatted }}</td>
-                                <td>{{ $attendance->break_time_formatted }}</td>
-                                <td>{{ $attendance->work_time_formatted }}</td>
-                                <td>
-                                    <a href="/attendance/detail/{{ $attendance->id }}">詳細</a>
+                                <td class="list-data">{{ $attendance->work_date->translatedFormat('m/d(D)') }}</td>
+                                <td class="list-data">{{ $attendance->clock_in_formatted }}</td>
+                                <td class="list-data">{{ $attendance->clock_out_formatted }}</td>
+                                <td class="list-data">{{ $attendance->break_time_formatted }}</td>
+                                <td class="list-data">{{ $attendance->work_time_formatted }}</td>
+                                <td class="list-data">
+                                    <a class="list-data__detail" href="/attendance/detail/{{ $attendance->id }}">詳細</a>
                                 </td>
                             </tr>
                         @empty

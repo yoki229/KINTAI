@@ -25,7 +25,7 @@
 
 .clock-date {
     font-size: 33px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .clock-time{
@@ -35,7 +35,7 @@
 }
 
 .attendance-button__item {
-    margin-top: 40px;
+    margin-top: 70px;
 }
 
 .attendance-in-out-button {

@@ -76,7 +76,7 @@ class AttendanceRecord extends Model
         $work_minutes = $this->work_minutes;
         $hour = intdiv($work_minutes, 60);
         $mins = $work_minutes % 60;
-        return sprintf('%02d:%02d', $hour, $mins);
+        return $hour . ':' . sprintf('%02d', $mins);
     }
 
     // アクセサ：休憩合計時間（分）
@@ -100,7 +100,7 @@ class AttendanceRecord extends Model
         $hour = intdiv($break_minutes, 60);
         $mins = $break_minutes % 60;
 
-        return sprintf('%02d:%02d', $hour, $mins);
+        return $hour . ':' . sprintf('%02d', $mins);
     }
 
     // アクセサ：出勤時間 HH:MM 表示

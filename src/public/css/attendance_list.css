@@ -17,6 +17,8 @@
     margin: 0 auto;
     height: auto;
     width: 70%;
+    max-width: 900px;
+    min-width: 550px;
 }
 
 /* タイトル */
@@ -30,10 +32,36 @@
 
 /* 月日メニュー */
 .attendance-list__date-menu {
-    display: flex;
-    justify-content: space-between;
     width: 100%;
     background-color: white;
+    border-radius: 10px;
+}
+
+.date-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.date-menu__month-link {
+    text-decoration: none;
+    color: #747474;
+    font-weight: bold;
+}
+
+.date-menu__month-link i {
+    font-size: 16px;
+    color: #b3b3b3;
+    vertical-align: middle;
+    margin: 0 5px;
+}
+
+.date-menu__center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
 /* カレンダーアイコン */
@@ -53,16 +81,47 @@
 .month-picker::before {
     content: "";
     display: block;
-    width: 40px;
-    height: 40px;
+    width: 22px;
+    height: 22px;
     background: url('/images/calendar-icon.png') no-repeat center center;
     background-size: cover;
     cursor: pointer;
     z-index: 1;
 }
 
+.month {
+    font-size: large;
+    font-weight: bold;
+}
+
 /* 勤怠一覧 */
 .attendance-list__list {
     width: 100%;
     background-color: white;
+    border-radius: 10px;
+}
+
+.attendance-list {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: center;
+}
+
+.list-header,
+.list-data {
+    color: #747474;
+    font-weight: bold;
+    border-bottom: 3px solid #f0eff2;
+    padding: 8px;
+    word-wrap: break-word;
+}
+
+.list-header {
+    border-bottom: 4px solid #f0eff2;
+}
+
+.list-data__detail {
+    text-decoration: none;
+    color: black;
 }
