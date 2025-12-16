@@ -120,14 +120,38 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面（一般ユーザー）
-    public function detail()
+    public function detail($id)
     {
-        return view('attendance_detail');
+        $attendance = AttendanceRecord::findOrFail($id);
+        if ($attendance->user_id !== auth()->id()) {
+            return redirect('/attendance/list')->with('error', '不正なアクセスです');
+        }
+
+        $breaks = $attendance->breaks->take(2);
+
+        return view('attendance_detail', compact('attendance', 'breaks'));
     }
 
     // 勤怠詳細画面から申請（一般ユーザー）
-    public function requestCorrection()
+    public function requestCorrection(AttendanceCorrectionRequest $request, AttendanceRecord $attendance)
     {
+        if ($attendance->user_id !== auth()->id()) {
+            return redirect('attendance_detail')->with('error', '不正なアクセスです');
+        }
+
+        AttendanceCorrection::create([
+            'attendance_record_id' => $attendance->id,
+            'user_id'              => auth()->id(),
+            'clock_in'             => $request->clock_in,
+            'clock_out'            => $request->clock_out,
+            'break1_start'         => $request->break1_start,
+            'break1_end'           => $request->break1_end,
+            'break2_start'         => $request->break2_start,
+            'break2_end'           => $request->break2_end,
+            'note'                 => $request->note,
+            'status'               => 'pending',
+        ]);
+
         return redirect()->back();
     }
 
