@@ -70,10 +70,10 @@
                         <th class="attendance-detail-form__label">休憩</th>
                         <td class="attendance-detail-form__data">
                             <input type="time" name="break1_start"
-                                    value="{{ $breaks[0]?->break_start ?? null }}">
+                                value="{{ optional($breaks[0]?->break_start)->format('H:i') }}">
                             〜
                             <input type="time" name="break1_end"
-                                    value="{{ $breaks[0]?->break_end ?? null }}">
+                                value="{{ optional($breaks[0]?->break_end)->format('H:i') }}">
                         </td>
                     </tr>
 
@@ -82,10 +82,10 @@
                         <th class="attendance-detail-form__label">休憩２</th>
                         <td class="attendance-detail-form__data">
                             <input type="time" name="break2_start"
-                                    value="{{ $breaks[1]?->break_start ?? null }}">
+                                value="{{ optional($breaks[1]?->break_start)->format('H:i') }}">
                             〜
                             <input type="time" name="break2_end"
-                                    value="{{ $breaks[1]?->break_end ?? null }}">
+                                value="{{ optional($breaks[1]?->break_end)->format('H:i') }}">
                         </td>
                     </tr>
 

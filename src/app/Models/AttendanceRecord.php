@@ -59,13 +59,21 @@ class AttendanceRecord extends Model
         return $query->where('user_id', $userId)->where('work_date', $workDate);
     }
 
+    // 出勤しているかどうか
+    public function getHasWorkedAttribute()
+    {
+        return !is_null($this->clock_in) && !is_null($this->clock_out);
+    }
+
     // アクセサ：出勤合計時間（分）
     public function getWorkMinutesAttribute()
     {
-        if (!$this->clock_in || !$this->clock_out) return 0;
+        if (!$this->has_worked) {
+            return 0;
+        }
 
-        $total = Carbon::parse($this->clock_in)
-            ->diffInMinutes(Carbon::parse($this->clock_out));
+        $total = $this->clock_in
+        ->diffInMinutes($this->clock_out);
 
         return max(0, $total - $this->break_minutes);
     }
@@ -73,32 +81,42 @@ class AttendanceRecord extends Model
     // アクセサ：出勤合計時間 HH:MM 表示
     public function getWorkTimeFormattedAttribute()
     {
-        $work_minutes = $this->work_minutes;
-        $hour = intdiv($work_minutes, 60);
-        $mins = $work_minutes % 60;
+        if (!$this->has_worked) {
+            return '';
+        }
+
+        $hour = intdiv($this->work_minutes, 60);
+        $mins = $this->work_minutes % 60;
+
         return $hour . ':' . sprintf('%02d', $mins);
     }
 
     // アクセサ：休憩合計時間（分）
     public function getBreakMinutesAttribute()
     {
+        if (!$this->has_worked) {
+            return 0;
+        }
+
         return $this->breaks->sum(function ($break) {
             if (!$break->break_end) {
                 return 0;
             }
 
-            return Carbon::parse($break->break_start)
-            ->diffInMinutes(Carbon::parse($break->break_end));
+            return $break->break_start
+                ->diffInMinutes($break->break_end);
         });
     }
 
     // アクセサ：休憩合計時間 HH:MM 表示
     public function getBreakTimeFormattedAttribute()
     {
-        $break_minutes = $this->break_minutes;
+        if (!$this->has_worked) {
+            return '';
+        }
 
-        $hour = intdiv($break_minutes, 60);
-        $mins = $break_minutes % 60;
+        $hour = intdiv($this->break_minutes, 60);
+        $mins = $this->break_minutes % 60;
 
         return $hour . ':' . sprintf('%02d', $mins);
     }
@@ -106,12 +124,12 @@ class AttendanceRecord extends Model
     // アクセサ：出勤時間 HH:MM 表示
     public function getClockInFormattedAttribute()
     {
-        return $this->clock_in ? $this->clock_in->format('H:i') : '-';
+        return $this->clock_in ? $this->clock_in->format('H:i') : '';
     }
 
     // アクセサ：退勤時間 HH:MM 表示
     public function getClockOutFormattedAttribute()
     {
-        return $this->clock_out ? $this->clock_out->format('H:i') : '-';
+        return $this->clock_out ? $this->clock_out->format('H:i') : '';
     }
 }

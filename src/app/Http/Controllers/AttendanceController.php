@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use App\Models\AttendanceRecord;
+use App\Models\BreakRecord;
 
 class AttendanceController extends Controller
 {
@@ -93,29 +95,46 @@ class AttendanceController extends Controller
         $user = Auth::user();
 
         // 月表示（デフォルトは今月）
-        $month = $request->input('month') ? Carbon::createFromFormat('Y-m', $request->month) : Carbon::now();
+        $month = $request->month ? Carbon::createFromFormat('Y-m', $request->month) : Carbon::now();
 
-        // 年・月
-        $year = $month->year;
-        $monthNumber = $month->month;
-
-        //前月・翌月（リンク）
+        // 前月・翌月（リンク）
         $prevMonth = $month->copy()->subMonth()->format('Y-m');
         $nextMonth = $month->copy()->addMonth()->format('Y-m');
 
-        // 表示用
+        // 前月・翌月（表示用）
         $currentMonth = $month->format('Y/m');
         $currentMonthInput = $month->format('Y-m');
 
+        // 月初～月末
+        $start = $month->copy()->startOfMonth();
+        $end = $month->copy()->endOfMonth();
+
         // 勤怠データ取得（モデルスコープ使用）
-        $attendances = AttendanceRecord::forMonth($year, $monthNumber)
+        $attendances = AttendanceRecord::forMonth($month->year, $month->month)
             ->where('user_id', $user->id)
-            ->orderBy('work_date')
             ->with('breaks')
-            ->get();
+            ->get()
+            ->keyBy(function ($attendance) {
+                return $attendance->work_date->format('Y-m-d');
+            });
+
+        // １か月分の勤怠を作成（勤怠レコードがなければ空のレコードを作る）
+        $days = collect(CarbonPeriod::create($start, $end))
+            ->map(function ($date) use($user) {
+                return AttendanceRecord::firstOrCreate(
+                    [
+                        'user_id'   => $user->id,
+                        'work_date' => $date->format('Y-m-d'),
+                    ],
+                    [
+                        'clock_in'  => null,
+                        'clock_out' => null,
+                    ]
+                );
+            });
 
         return view('attendance_list', compact(
-            'attendances', 'prevMonth', 'nextMonth', 'currentMonth', 'currentMonthInput'
+            'days', 'prevMonth', 'nextMonth', 'currentMonth', 'currentMonthInput'
         ));
     }
 
@@ -127,7 +146,13 @@ class AttendanceController extends Controller
             return redirect('/attendance/list')->with('error', '不正なアクセスです');
         }
 
-        $breaks = $attendance->breaks->take(2);
+        // 既存の休憩を取得
+        $breaks = $attendance->breaks()->orderBy('id')->get();
+
+        // 必ず2件になるように補完
+        while ($breaks->count() < 2) {
+            $breaks->push(new BreakRecord());
+        }
 
         return view('attendance_detail', compact('attendance', 'breaks'));
     }

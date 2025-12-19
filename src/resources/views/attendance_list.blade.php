@@ -63,22 +63,28 @@
                     </thead>
 
                     <tbody>
-                        @forelse ($attendances as $attendance)
+                        @foreach ($days as $attendance)
                             <tr>
-                                <td class="list-data">{{ $attendance->work_date->translatedFormat('m/d(D)') }}</td>
-                                <td class="list-data">{{ $attendance->clock_in_formatted }}</td>
-                                <td class="list-data">{{ $attendance->clock_out_formatted }}</td>
-                                <td class="list-data">{{ $attendance->break_time_formatted }}</td>
-                                <td class="list-data">{{ $attendance->work_time_formatted }}</td>
+                                <td class="list-data">
+                                    {{ $attendance->work_date->translatedFormat('m/d(D)') }}
+                                </td>
+                                <td class="list-data">
+                                    {{ $attendance->clock_in_formatted }}
+                                </td>
+                                <td class="list-data">
+                                    {{ $attendance->clock_out_formatted }}
+                                </td>
+                                <td class="list-data">
+                                    {{ $attendance->break_time_formatted }}
+                                </td>
+                                <td class="list-data">
+                                {{ $attendance->work_time_formatted }}
+                                </td>
                                 <td class="list-data">
                                     <a class="list-data__detail" href="/attendance/detail/{{ $attendance->id }}">詳細</a>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6">勤怠データがありません</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
