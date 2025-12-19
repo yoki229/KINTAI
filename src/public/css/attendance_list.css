@@ -10,6 +10,16 @@
     padding: 70px 0;
 }
 
+.error {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 25px;
+    background-color: #ff5555;
+    color: white;
+    padding-left: 30px;
+}
+
 .attendance-list-content__inner {
     display: flex;
     flex-direction: column;

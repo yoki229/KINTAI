@@ -16,6 +16,12 @@
 <!-- 本体 -->
 @section('content')
     <div class="attendance-list__inner">
+
+        {{-- 不正時アクセス時のメッセージ --}}
+        @if(session('error'))
+            <p class="error">{{session('error')}}</p>
+        @endif
+
         <div class="attendance-list-content__inner">
             {{-- タイトル --}}
             <div class="attendance-list__title">

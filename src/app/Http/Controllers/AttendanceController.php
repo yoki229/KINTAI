@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\AttendanceRecord;
 use App\Models\BreakRecord;
+use App\Models\AttendanceCorrection;
+use App\Http\Requests\AttendanceCorrectionRequest;
 
 class AttendanceController extends Controller
 {
@@ -109,15 +111,6 @@ class AttendanceController extends Controller
         $start = $month->copy()->startOfMonth();
         $end = $month->copy()->endOfMonth();
 
-        // 勤怠データ取得（モデルスコープ使用）
-        $attendances = AttendanceRecord::forMonth($month->year, $month->month)
-            ->where('user_id', $user->id)
-            ->with('breaks')
-            ->get()
-            ->keyBy(function ($attendance) {
-                return $attendance->work_date->format('Y-m-d');
-            });
-
         // １か月分の勤怠を作成（勤怠レコードがなければ空のレコードを作る）
         $days = collect(CarbonPeriod::create($start, $end))
             ->map(function ($date) use($user) {
@@ -158,26 +151,32 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面から申請（一般ユーザー）
-    public function requestCorrection(AttendanceCorrectionRequest $request, AttendanceRecord $attendance)
+    public function requestCorrection(AttendanceCorrectionRequest $request, $id)
     {
-        if ($attendance->user_id !== auth()->id()) {
-            return redirect('attendance_detail')->with('error', '不正なアクセスです');
+        $attendance = AttendanceRecord::with('breaks')->findOrFail($id);
+
+        // 本人チェック
+        if($attendance->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', '不正なアクセスです');
         }
 
+        // 修正申請
         AttendanceCorrection::create([
-            'attendance_record_id' => $attendance->id,
-            'user_id'              => auth()->id(),
-            'clock_in'             => $request->clock_in,
-            'clock_out'            => $request->clock_out,
-            'break1_start'         => $request->break1_start,
-            'break1_end'           => $request->break1_end,
-            'break2_start'         => $request->break2_start,
-            'break2_end'           => $request->break2_end,
-            'note'                 => $request->note,
-            'status'               => 'pending',
+            'attendance_record_id'  => $attendance->id,
+            'user_id'               => Auth::id(),
+            'requested_changes'    => [
+                'clock_in'     => $request->clock_in,
+                'clock_out'    => $request->clock_out,
+                'break1_start' => $request->break1_start,
+                'break1_end'   => $request->break1_end,
+                'break2_start' => $request->break2_start,
+                'break2_end'   => $request->break2_end,
+                'note'         => $request->note,
+            ],
+            'status' => AttendanceCorrection::STATUS_PENDING,
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', '勤怠修正を申請しました');
     }
 
     // 申請一覧（ユーザー側）

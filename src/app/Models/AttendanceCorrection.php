@@ -14,8 +14,11 @@ class AttendanceCorrection extends Model
 
     protected $casts = [
         'requested_changes' => 'array',
-        'processed_at' => 'datetime',
     ];
+
+    const STATUS_PENDING  = 'pending';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
 
     public function attendanceRecord()
     {
