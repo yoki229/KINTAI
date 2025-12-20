@@ -132,4 +132,17 @@ class AttendanceRecord extends Model
     {
         return $this->clock_out ? $this->clock_out->format('H:i') : '';
     }
+
+    // アクセサ：申請中か判断する
+    public function latestCorrection()
+    {
+        return $this->hasOne(AttendanceCorrection::class)
+                    ->latestOfMany();
+    }
+
+    public function getIsCorrectionPendingAttribute(): bool
+    {
+        return $this->latestCorrection
+            && $this->latestCorrection->status === AttendanceCorrection::STATUS_PENDING;
+    }
 }

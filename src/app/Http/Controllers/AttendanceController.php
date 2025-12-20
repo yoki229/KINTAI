@@ -147,7 +147,10 @@ class AttendanceController extends Controller
             $breaks->push(new BreakRecord());
         }
 
-        return view('attendance_detail', compact('attendance', 'breaks'));
+        $isPending = $attendance->is_correction_pending;
+        $changes = $attendance->latestCorrection?->requested_changes ?? [];
+
+        return view('attendance_detail', compact('attendance', 'breaks', 'isPending', 'changes'));
     }
 
     // 勤怠詳細画面から申請（一般ユーザー）
