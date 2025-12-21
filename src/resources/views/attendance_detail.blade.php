@@ -197,6 +197,11 @@
                             @else
                                 <textarea class="note" name="note" rows="3">{{ old('note', $attendance->note ?? '') }}</textarea>
                             @endif
+                            <div class="form__error-message">
+                            @error('note')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                            </div>
                         </td>
                         <td class="space"></td>
                     </tr>

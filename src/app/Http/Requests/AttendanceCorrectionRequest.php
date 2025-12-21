@@ -20,11 +20,12 @@ class AttendanceCorrectionRequest extends FormRequest
             'break1_end'    => ['nullable', 'date_format:H:i'],
             'break2_start'  => ['nullable', 'date_format:H:i'],
             'break2_end'    => ['nullable', 'date_format:H:i'],
-            'note'          => ['nullable', 'string'],
+            'note'          => ['required', 'string'],
         ];
     }
 
-    private function validateBreak($validator, $start, $end, $startKey, $endKey) {
+    private function validateBreak($validator, $start, $end, $startKey, $endKey, $clockOut)
+    {
         if ($start || $end) {
             if (!$start || !$end) {
                 $validator->errors()->add(
@@ -34,10 +35,12 @@ class AttendanceCorrectionRequest extends FormRequest
                 return;
             }
 
-            if ($start >= $end) {
+            if ($start >= $end || ($clockOut && $end > $clockOut)) {
                 $validator->errors()->add(
                     $endKey,
-                    '休憩終了は開始より後にしてください'
+                    ($clockOut && $end > $clockOut)
+                    ? '休憩時間もしくは退勤時間が不適切な値です'
+                    : '休憩時間が不適切な値です'
                 );
             }
         }
@@ -46,12 +49,15 @@ class AttendanceCorrectionRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            // 出勤・退勤
-            if ($this->clock_in && $this->clock_out) {
-                if ($this->clock_in >= $this->clock_out) {
+            $clockIn = $this->clock_in;
+            $clockOut = $this->clock_out;
+
+            // 出勤・退勤チェック
+            if ($clockIn && $clockOut) {
+                if ($clockIn >= $clockOut) {
                     $validator->errors()->add(
-                        'clock_out',
-                        '退勤時間は出勤時間より後にしてください'
+                        'clock_in',
+                        '出勤時間が不適切な値です'
                     );
                 }
             }
@@ -62,7 +68,8 @@ class AttendanceCorrectionRequest extends FormRequest
                 $this->break1_start,
                 $this->break1_end,
                 'break1_start',
-                'break1_end'
+                'break1_end',
+                $clockOut
             );
 
             // 休憩2
@@ -71,7 +78,8 @@ class AttendanceCorrectionRequest extends FormRequest
                 $this->break2_start,
                 $this->break2_end,
                 'break2_start',
-                'break2_end'
+                'break2_end',
+                $clockOut
             );
         });
     }
@@ -85,6 +93,7 @@ class AttendanceCorrectionRequest extends FormRequest
             'break1_end.date_format'   => '休憩終了の形式が正しくありません',
             'break2_start.date_format' => '休憩開始の形式が正しくありません',
             'break2_end.date_format'   => '休憩終了の形式が正しくありません',
+            'note.required'            => '備考を記入してください',
         ];
     }
 }
