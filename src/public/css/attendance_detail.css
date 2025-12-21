@@ -65,6 +65,7 @@
     border-collapse: collapse;
     table-layout: fixed;
     letter-spacing: 0.1em;
+    padding-bottom: 30px;
 }
 
 .col-label {
