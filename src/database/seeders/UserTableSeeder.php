@@ -18,7 +18,7 @@ class UserTableSeeder extends Seeder
         //テストログイン用の一人分の管理者テストダミーデータ
         User::create([
             'id'                => 1,
-            'name'              => '山田太郎',
+            'name'              => '山田 太郎',
             'email'             => 'yamada@example.com',
             'password'          => Hash::make('password'),
             'email_verified_at' => null,
@@ -28,7 +28,7 @@ class UserTableSeeder extends Seeder
         //テストログイン用の一人分の一般テストダミーデータ
         User::create([
             'id'                => 2,
-            'name'              => '佐藤花子',
+            'name'              => '佐藤 花子',
             'email'             => 'satou@example.com',
             'password'          => Hash::make('password'),
             'email_verified_at' => now(),

@@ -112,7 +112,7 @@ class AttendanceController extends Controller
         $end = $month->copy()->endOfMonth();
 
         // １か月分の勤怠を作成（勤怠レコードがなければ空のレコードを作る）
-        $days = collect(CarbonPeriod::create($start, $end))
+        $attendances = collect(CarbonPeriod::create($start, $end))
             ->map(function ($date) use($user) {
                 return AttendanceRecord::firstOrCreate(
                     [
@@ -127,7 +127,7 @@ class AttendanceController extends Controller
             });
 
         return view('attendance_list', compact(
-            'days', 'prevMonth', 'nextMonth', 'currentMonth', 'currentMonthInput'
+            'attendances', 'prevMonth', 'nextMonth', 'currentMonth', 'currentMonthInput'
         ));
     }
 
@@ -176,6 +176,7 @@ class AttendanceController extends Controller
                 'break2_end'   => $request->break2_end,
                 'note'         => $request->note,
             ],
+            'reason' => $request->note,
             'status' => AttendanceCorrection::STATUS_PENDING,
         ]);
 
@@ -183,8 +184,30 @@ class AttendanceController extends Controller
     }
 
     // 申請一覧（ユーザー側）
-    public function myCorrection()
+    public function myCorrection(Request $request)
     {
-        return view('stamp_correction_request_list');
+        $user = auth()->user();
+        $tab = $request->input('tab','pending');
+
+        $query = AttendanceCorrection::where('user_id', $user->id);
+
+        if ($tab === 'approved') {
+            $query->approved();
+        } else {
+            $query->pending();
+        }
+
+        $corrections = $query
+            ->with([
+                'user:id,name',
+                'attendanceRecord:id,work_date',
+            ])
+            ->latest()
+            ->get();
+
+        return view(
+            'stamp_correction_request_list',
+            compact('corrections', 'tab')
+        );
     }
 }

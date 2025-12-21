@@ -70,7 +70,7 @@
                     </thead>
 
                     <tbody>
-                        @foreach ($days as $attendance)
+                        @foreach ($attendances as $attendance)
                             <tr>
                                 <td class="list-data">
                                     {{ $attendance->work_date->translatedFormat('m/d(D)') }}

@@ -18,7 +18,6 @@ class AttendanceCorrection extends Model
 
     const STATUS_PENDING  = 'pending';
     const STATUS_APPROVED = 'approved';
-    const STATUS_REJECTED = 'rejected';
 
     public function attendanceRecord()
     {
@@ -28,5 +27,16 @@ class AttendanceCorrection extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // 切り替えタブ用スコープ
+    public function scopePending($query)
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', self::STATUS_APPROVED);
     }
 }
