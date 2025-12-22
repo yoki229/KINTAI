@@ -14,6 +14,7 @@ class UserTest extends TestCase
     use RefreshDatabase;
 
     // ４.日時取得機能（現在の日時情報がUIと同じ形式で出力されている）
+    // 「Laravelの Feature テストだけでは「JSで表示された現在日時」を取得・検証することはできません。」ということで困っている
     public function testCurrentDateTimeDisplaysCorrectly()
     {
         $user = User::factory()->create();
@@ -431,7 +432,7 @@ class UserTest extends TestCase
         $this->actingAs($user);
         $response = $this->get("/attendance/detail/{$attendance->id}");
         $response->assertStatus(200);
-        $expectedDate = $attendance->work_date->format('Y年 n月 j日');
+        $expectedDate = $attendance->work_date->format('Y年n月j日');
         $response->assertSee($expectedDate);
     }
 
@@ -489,7 +490,7 @@ class UserTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/update", [
+        $response = $this->post("/attendance/detail/{$attendance->id}/Correction", [
             'clock_in' => '18:00', // 退勤より後
             'clock_out' => '17:00',
             'note' => 'テスト',
@@ -510,7 +511,7 @@ class UserTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/update", [
+        $response = $this->post("/attendance/detail/{$attendance->id}/Correction", [
             'break_start' => '18:00',
             'break_end' => '18:30',
             'note' => 'テスト',
@@ -531,7 +532,7 @@ class UserTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/update", [
+        $response = $this->post("/attendance/detail/{$attendance->id}/Correction", [
             'break_start' => '16:00',
             'break_end' => '18:00',
             'note' => 'テスト',

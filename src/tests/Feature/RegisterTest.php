@@ -95,7 +95,11 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        // 登録を確認
-        $response->assertDatabaseHas('users', ['email' => 'hujitani@example.com']);
+        $response->assertStatus(302);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'hujitani@example.com',
+            'name'  => '藤谷次郎',
+        ]);
     }
 }

@@ -35,12 +35,27 @@ class AttendanceCorrectionRequest extends FormRequest
                 return;
             }
 
-            if ($start >= $end || ($clockOut && $end > $clockOut)) {
+                // 開始 >= 終了
+            if ($start >= $end) {
+                $validator->errors()->add(
+                    $startKey,
+                    '休憩時間が不適切な値です'
+                );
+            }
+
+            // 休憩開始が退勤後
+            if ($clockOut && $start > $clockOut) {
+                $validator->errors()->add(
+                    $startKey,
+                    '休憩時間が不適切な値です'
+                );
+            }
+
+            // 休憩終了が退勤後
+            if ($clockOut && $end > $clockOut) {
                 $validator->errors()->add(
                     $endKey,
-                    ($clockOut && $end > $clockOut)
-                    ? '休憩時間もしくは退勤時間が不適切な値です'
-                    : '休憩時間が不適切な値です'
+                    '休憩時間もしくは退勤時間が不適切な値です'
                 );
             }
         }

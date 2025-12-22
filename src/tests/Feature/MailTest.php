@@ -3,10 +3,11 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Tests\TestCase;
 use App\Models\User;
-use App\Notifications\CustomVerifyEmail;
 
 class MailTest extends TestCase
 {
@@ -24,10 +25,16 @@ class MailTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $user = User::where('email', 'hujitani@example.com')->first();
+        $user = User::where(
+            'email', 'hujitani@example.com')->first();
+
         $this->assertNotNull($user, 'ユーザーが登録されていません');
         $this->assertDatabaseHas('users', ['email' => 'hujitani@example.com']);
-        Notification::assertSentTo($user, CustomVerifyEmail::class);
+
+        Notification::assertSentTo(User::where(
+            'email', 'hujitani@example.com')->first(),
+            VerifyEmail::class
+        );
     }
 
     //16.メール認証機能（メール認証誘導画面で「認証はこちらから」ボタンを押下するとメール認証サイトに遷移する）
@@ -42,7 +49,6 @@ class MailTest extends TestCase
         $response->assertRedirect('/email');
     }
 
-
     //16.メール認証機能（メール認証サイトのメール認証を完了すると、勤怠登録画面に遷移する）
     public function testEmailVerificationCompletesAndRedirects()
     {
@@ -55,9 +61,11 @@ class MailTest extends TestCase
         // 通知を明示的に送る
         $user->sendEmailVerificationNotification();
 
-        Notification::assertSentTo($user, CustomVerifyEmail::class);
+        Notification::assertSentTo(
+            $user,
+            VerifyEmail::class
+        );
 
-        // EmailVerificationRequestをシミュレート
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
