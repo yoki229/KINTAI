@@ -142,11 +142,6 @@ class AttendanceController extends Controller
         // 既存の休憩を取得
         $breaks = $attendance->breaks()->orderBy('id')->get();
 
-        // 必ず2件になるように補完
-        while ($breaks->count() < 2) {
-            $breaks->push(new BreakRecord());
-        }
-
         $isPending = $attendance->is_correction_pending;
         $changes = $attendance->latestCorrection?->requested_changes ?? [];
 

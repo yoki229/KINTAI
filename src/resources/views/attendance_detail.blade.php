@@ -108,7 +108,7 @@
                         <td class="space"></td>
                     </tr>
 
-                    {{-- 休憩 --}}
+                    <!-- {{-- 休憩 --}}
                     <tr class="attendance-detail-form__row">
                         <th class="attendance-detail-form__label">休憩</th>
                         <td class="attendance-detail-form__data">
@@ -184,7 +184,7 @@
                             </div>
                         </td>
                         <td class="space"></td>
-                    </tr>
+                    </tr> -->
 
                     {{-- 備考 --}}
                     <tr class="attendance-detail-form__row">
