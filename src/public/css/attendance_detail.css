@@ -135,7 +135,7 @@
 .form__clock-input {
     appearance: none;
     -webkit-appearance: none;
-    border: 1px solid #f0eff2;
+    border: 1px solid #e6e6e6ff;
     box-shadow: none;
     text-align: center;
     padding: 0 17px;
@@ -160,9 +160,10 @@
 .note {
     resize: none;
     width: 100%;
-    border: 1px solid #f0eff2;
+    border: 1px solid #e6e6e6ff;
     border-radius: 5px;
     padding: 10px;
+    margin: 15px 0;
     font-weight: bold;
     letter-spacing: 0.1em;
 }

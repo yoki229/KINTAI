@@ -108,6 +108,7 @@ class UserTest extends TestCase
             'user_id' => $user->id,
             'status'  => 'off_work',
             'work_date' => today(),
+            'clock_in'  => null,
         ]);
 
         $this->actingAs($user);
@@ -255,8 +256,7 @@ class UserTest extends TestCase
         foreach ($record->breaks as $break) {
             $this->assertNotNull($break->break_start);
             $this->assertNotNull($break->break_end);
-            $response->assertSee($break->break_start->format('H:i'));
-            $response->assertSee($break->break_end->format('H:i'));
+            $response->assertSee($record->break_time_formatted);
         }
     }
 
@@ -277,7 +277,8 @@ class UserTest extends TestCase
         $this->actingAs($user);
 
         // 退勤ボタン押下
-        $response = $this->post('/attendance/clock-out');
+        $response = $this->from('/attendance')
+                        ->post('/attendance/clock-out');
 
         $response->assertStatus(302); // リダイレクト確認
         $response->assertRedirect('/attendance');

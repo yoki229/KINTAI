@@ -16,13 +16,25 @@ class BreakRecord extends Model
     ];
 
     protected $casts = [
-        'break_start' => 'datetime',
-        'break_end'   => 'datetime',
+        'break_start' => 'datetime:H:i',
+        'break_end'   => 'datetime:H:i',
     ];
 
     public function attendance()
     {
         return $this->belongsTo(AttendanceRecord::class);
+    }
+
+    // アクセサ：休憩開始 HH:MM（input用）
+    public function getBreakStartFormattedAttribute()
+    {
+        return $this->break_start ? $this->break_start->format('H:i') : '';
+    }
+
+    // アクセサ：休憩終了 HH:MM（input用）
+    public function getBreakEndFormattedAttribute()
+    {
+        return $this->break_end ? $this->break_end->format('H:i') : '';
     }
 
 }

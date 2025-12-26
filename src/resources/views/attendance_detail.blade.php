@@ -87,12 +87,12 @@
                                 @else
                                     <div class="clock-inputs__item">
                                         <input class="form__clock-input" type="time" name="clock_in"
-                                            value="{{ old('clock_in', optional($attendance->clock_in)->format('H:i')) }}">
+                                            value="{{ old('clock_in', $attendance->clock_in_formatted) }}">
                                     </div>
                                     <span class="clock-inputs__item">～</span>
                                     <div class="clock-inputs__item">
                                         <input class="form__clock-input" type="time" name="clock_out"
-                                            value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}">
+                                            value="{{ old('clock_out', $attendance->clock_out_formatted) }}">
                                     </div>
                                 @endif
                             </div>
@@ -126,12 +126,12 @@
                                 @else
                                     <div class="clock-inputs__item">
                                         <input class="form__clock-input" type="time" name="break1_start"
-                                            value="{{ old('break1_start', optional($breaks[0]?->break_start)->format('H:i')) }}">
+                                            value="{{ old('break1_start', $breaks[0]?->break_start_formatted) }}">
                                     </div>
                                     <span class="clock-inputs__item">～</span>
                                     <div class="clock-inputs__item">
                                         <input class="form__clock-input" type="time" name="break1_end"
-                                            value="{{ old('break1_end', optional($breaks[0]?->break_end)->format('H:i')) }}">
+                                            value="{{ old('break1_end', $breaks[0]?->break_end_formatted) }}">
                                     </div>
                                 @endif
                             </div>
@@ -165,12 +165,12 @@
                                 @else
                                     <div class="clock-inputs__item">
                                         <input class="form__clock-input" type="time" name="break2_start"
-                                            value="{{ old('break2_start', optional($breaks[1]?->break_start)->format('H:i')) }}">
+                                            value="{{ old('break2_start', $breaks[1]?->break_start_formatted) }}">
                                     </div>
                                     <span class="clock-inputs__item">～</span>
                                     <div class="clock-inputs__item">
                                         <input class="form__clock-input" type="time" name="break2_end"
-                                            value="{{ old('break2_end', optional($breaks[1]?->break_end)->format('H:i')) }}">
+                                            value="{{ old('break2_end', $breaks[1]?->break_end_formatted) }}">
                                     </div>
                                 @endif
                             </div>
