@@ -1,0 +1,173 @@
+.success {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 25px;
+    background-color: #2adf6d;
+    color: white;
+    padding-left: 30px;
+    margin: 0;
+}
+
+/* 全体 */
+.attendance-detail__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f0eff2;
+    margin: 0 auto;
+    padding: 70px 0;
+}
+
+.attendance-detail-content__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin: 0 auto;
+    height: auto;
+    width: 70%;
+    max-width: 900px;
+    min-width: 550px;
+}
+
+/* タイトル */
+.title {
+    padding: 0 22px;
+    margin: 0;
+    border-left: 10px solid #000;
+    background: #f0eff2;
+    width: 100%;
+}
+
+/* 修正フォーム */
+.attendance-detail-form__inner {
+    width: 100%;
+}
+
+.attendance-detail-form__table {
+    width: 100%;
+    min-width: 600px;
+    background-color: white;
+    border-radius: 10px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    letter-spacing: 0.1em;
+    padding-bottom: 30px;
+}
+
+.col-label {
+    width: 35%;
+}
+
+.col-data {
+    width: 40%;
+    min-width: 300px;
+}
+
+.col-space {
+    width: 25%;
+}
+
+.attendance-detail-form__label {
+    height: 80px;
+    text-align: left;
+    padding-left: 55px;
+    color: #747474;
+    border-bottom: 3px solid #f0eff2;
+    word-wrap: break-word;
+}
+
+.attendance-detail-form__data {
+    height: 80px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 3px solid #f0eff2;
+    word-wrap: break-word;
+}
+
+.space {
+    border-bottom: 3px solid #f0eff2;
+}
+
+/* 名前 */
+.name {
+    margin-left: 10px;
+}
+
+/* 修正欄 */
+.form__date-inputs,
+.form__clock-inputs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 33px;
+}
+
+/* 日付の位置調整 */
+.date {
+    margin: 0 15px;
+    white-space: nowrap;
+}
+
+.form__clock-input {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #e6e6e6ff;
+    box-shadow: none;
+    text-align: center;
+    padding: 0 17px;
+    letter-spacing: 0.1em;
+    font-family: Arial, "Helvetica Neue", sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.form__clock-input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* エラーメッセージ */
+.error-message {
+    margin: 10px;
+    font-weight: normal;
+    color: red;
+}
+
+.note {
+    resize: none;
+    width: 100%;
+    border: 1px solid #e6e6e6ff;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 15px 0;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+}
+
+.plain-text--note {
+    margin: 0;
+}
+
+.attendance-detail-form__btn-inner {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+.pending-message {
+    color: red;
+    font-size: 16px;
+    text-align: right;
+}
+
+.request-button {
+    color: white;
+    background-color: black;
+    font-size: 22px;
+    border-radius: 10px;
+    padding: 7px 40px;
+    letter-spacing: 0.1em;
+}

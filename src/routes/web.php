@@ -41,10 +41,12 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::middleware(['admin'])->group(function () {
         // 勤怠一覧画面（管理者）
         Route::get('/admin/attendance/list', [AdminAttendanceController::class,'adminList']);
+        // 勤怠一覧画面（一般ユーザー）日付指定用のルート
+        Route::get('/admin/attendance/list', [AttendanceController::class, 'list'])->name('attendance.day');
         // 勤怠詳細画面（管理者）
-        Route::get('admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendance']);
+        Route::get('/admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendance']);
         // 勤怠詳細画面から修正（管理者）
-        Route::post('admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendance']);
+        Route::post('/admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendanceAdd']);
         // スタッフ一覧画面（管理者）
         Route::get('/admin/staff/list', [StaffController::class,'adminStaffList']);
         // スタッフ別勤怠一覧画面（管理者）
