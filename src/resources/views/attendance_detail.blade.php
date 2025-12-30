@@ -108,83 +108,62 @@
                         <td class="space"></td>
                     </tr>
 
-                    <!-- {{-- 休憩 --}}
+                    {{-- 休憩 --}}
+                    @foreach($breaks as $index => $break)
                     <tr class="attendance-detail-form__row">
-                        <th class="attendance-detail-form__label">休憩</th>
+                        <th class="attendance-detail-form__label">
+                            休憩{{ $index + 1 }}
+                        </th>
                         <td class="attendance-detail-form__data">
                             <div class="form__clock-inputs">
                                 @if($isPending)
                                     <span class="plain-text">
-                                        {{ $changes['break1_start'] ?? '' }}
+                                        {{ $changes['breaks'][$index]['start'] ?? $break->break_start_formatted ?? '' }}
                                     </span>
+                                    <span class="plain-text">～</span>
                                     <span class="plain-text">
-                                        ～
-                                    </span>
-                                    <span class="plain-text">
-                                        {{ $changes['break1_end'] ?? '' }}
+                                        {{ $changes['breaks'][$index]['end'] ?? $break->break_end_formatted ?? '' }}
                                     </span>
                                 @else
                                     <div class="clock-inputs__item">
-                                        <input class="form__clock-input" type="time" name="break1_start"
-                                            value="{{ old('break1_start', $breaks[0]?->break_start_formatted) }}">
+                                        <input
+                                            class="form__clock-input"
+                                            type="time"
+                                            name="breaks[{{ $index }}][start]"
+                                            @if(old("breaks.$index.start") !== null)
+                                                value="{{ old("breaks.$index.start") }}"
+                                            @elseif($break->break_start)
+                                                value="{{ $break->break_start_formatted }}"
+                                            @endif
+                                        >
                                     </div>
                                     <span class="clock-inputs__item">～</span>
                                     <div class="clock-inputs__item">
-                                        <input class="form__clock-input" type="time" name="break1_end"
-                                            value="{{ old('break1_end', $breaks[0]?->break_end_formatted) }}">
-                                    </div>
+                                        <input
+                                            class="form__clock-input"
+                                            type="time"
+                                            name="breaks[{{ $index }}][end]"
+                                            @if(old("breaks.$index.end") !== null)
+                                                value="{{ old("breaks.$index.end") }}"
+                                            @elseif($break->break_end)
+                                                value="{{ $break->break_end_formatted }}"
+                                            @endif
+                                        >
+                                </div>
                                 @endif
                             </div>
                             <div class="form__error-message">
-                                @error('break1_start')
+                                @error("breaks.$index.start")
                                     <p class="error-message">{{ $message }}</p>
                                 @enderror
-                                @error('break1_end')
+                                @error("breaks.$index.end")
                                     <p class="error-message">{{ $message }}</p>
                                 @enderror
                             </div>
                         </td>
                         <td class="space"></td>
                     </tr>
-
-                    {{-- 休憩２ --}}
-                    <tr class="attendance-detail-form__row">
-                        <th class="attendance-detail-form__label">休憩２</th>
-                        <td class="attendance-detail-form__data">
-                            <div class="form__clock-inputs">
-                                @if($isPending)
-                                    <span class="plain-text">
-                                        {{ $changes['break2_start'] ?? '' }}
-                                    </span>
-                                    <span class="plain-text">
-                                        ～
-                                    </span>
-                                    <span class="plain-text">
-                                        {{ $changes['break2_end'] ?? '' }}
-                                    </span>
-                                @else
-                                    <div class="clock-inputs__item">
-                                        <input class="form__clock-input" type="time" name="break2_start"
-                                            value="{{ old('break2_start', $breaks[1]?->break_start_formatted) }}">
-                                    </div>
-                                    <span class="clock-inputs__item">～</span>
-                                    <div class="clock-inputs__item">
-                                        <input class="form__clock-input" type="time" name="break2_end"
-                                            value="{{ old('break2_end', $breaks[1]?->break_end_formatted) }}">
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="form__error-message">
-                                @error('break2_start')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                                @error('break2_end')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </td>
-                        <td class="space"></td>
-                    </tr> -->
+                    @endforeach
 
                     {{-- 備考 --}}
                     <tr class="attendance-detail-form__row">

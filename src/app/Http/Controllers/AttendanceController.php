@@ -141,6 +141,8 @@ class AttendanceController extends Controller
 
         // 既存の休憩を取得
         $breaks = $attendance->breaks()->orderBy('id')->get();
+        // 一件分の休憩追加用
+        $breaks->push(new BreakRecord());
 
         $isPending = $attendance->is_correction_pending;
         $changes = $attendance->latestCorrection?->requested_changes ?? [];
@@ -164,11 +166,8 @@ class AttendanceController extends Controller
             'user_id'               => Auth::id(),
             'requested_changes'    => [
                 'clock_in'     => $request->clock_in,
+                'breaks'       => $request->breaks,
                 'clock_out'    => $request->clock_out,
-                'break1_start' => $request->break1_start,
-                'break1_end'   => $request->break1_end,
-                'break2_start' => $request->break2_start,
-                'break2_end'   => $request->break2_end,
                 'note'         => $request->note,
             ],
             'reason' => $request->note,

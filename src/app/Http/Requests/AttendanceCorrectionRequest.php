@@ -16,10 +16,8 @@ class AttendanceCorrectionRequest extends FormRequest
         return [
             'clock_in'      => ['nullable', 'date_format:H:i'],
             'clock_out'     => ['nullable', 'date_format:H:i'],
-            'break1_start'  => ['nullable', 'date_format:H:i'],
-            'break1_end'    => ['nullable', 'date_format:H:i'],
-            'break2_start'  => ['nullable', 'date_format:H:i'],
-            'break2_end'    => ['nullable', 'date_format:H:i'],
+            'breaks.*.start'  => ['nullable', 'date_format:H:i'],
+            'breaks.*.end'    => ['nullable', 'date_format:H:i'],
             'note'          => ['required', 'string'],
         ];
     }
@@ -77,25 +75,17 @@ class AttendanceCorrectionRequest extends FormRequest
                 }
             }
 
-            // 休憩1
-            $this->validateBreak(
-                $validator,
-                $this->break1_start,
-                $this->break1_end,
-                'break1_start',
-                'break1_end',
-                $clockOut
-            );
-
-            // 休憩2
-            $this->validateBreak(
-                $validator,
-                $this->break2_start,
-                $this->break2_end,
-                'break2_start',
-                'break2_end',
-                $clockOut
-            );
+            // 休憩
+            foreach ($this->breaks ?? [] as $index => $break){
+                $this->validateBreak(
+                    $validator,
+                    $break['start'] ?? null,
+                    $break['end'] ?? null,
+                    "breaks.$index.start",
+                    "breaks.$index.end",
+                    $clockOut
+                );
+            }
         });
     }
 
@@ -104,10 +94,8 @@ class AttendanceCorrectionRequest extends FormRequest
         return [
             'clock_in.date_format'  => '出勤時間の形式が正しくありません',
             'clock_out.date_format' => '退勤時間の形式が正しくありません',
-            'break1_start.date_format' => '休憩開始の形式が正しくありません',
-            'break1_end.date_format'   => '休憩終了の形式が正しくありません',
-            'break2_start.date_format' => '休憩開始の形式が正しくありません',
-            'break2_end.date_format'   => '休憩終了の形式が正しくありません',
+            'breaks.*.start.date_format' => '休憩開始の形式が正しくありません',
+            'breaks.*.end.date_format'   => '休憩終了の形式が正しくありません',
             'note.required'            => '備考を記入してください',
         ];
     }
