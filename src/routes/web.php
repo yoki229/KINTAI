@@ -20,8 +20,6 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/attendance/break-out', [AttendanceController::class,'breakOut']);
     Route::post('/attendance/clock-out', [AttendanceController::class,'clockOut']);
     // 勤怠一覧画面（一般ユーザー）
-    Route::get('/attendance/list', [AttendanceController::class,'list']);
-    // 勤怠一覧画面（一般ユーザー）月指定用のルート
     Route::get('/attendance/list', [AttendanceController::class, 'list'])->name('attendance.month');
     // 勤怠詳細画面（一般ユーザー）
     Route::get('/attendance/detail/{id}', [AttendanceController::class,'detail']);
@@ -40,9 +38,7 @@ Route::middleware(['auth','verified'])->group(function () {
 
     Route::middleware(['admin'])->group(function () {
         // 勤怠一覧画面（管理者）
-        Route::get('/admin/attendance/list', [AdminAttendanceController::class,'adminList']);
-        // 勤怠一覧画面（一般ユーザー）日付指定用のルート
-        Route::get('/admin/attendance/list', [AttendanceController::class, 'list'])->name('attendance.day');
+        Route::get('/admin/attendance/list', [AdminAttendanceController::class,'adminList'])->name('attendance.day');
         // 勤怠詳細画面（管理者）
         Route::get('/admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendance']);
         // 勤怠詳細画面から修正（管理者）
@@ -50,11 +46,11 @@ Route::middleware(['auth','verified'])->group(function () {
         // スタッフ一覧画面（管理者）
         Route::get('/admin/staff/list', [StaffController::class,'adminStaffList']);
         // スタッフ別勤怠一覧画面（管理者）
-        Route::get('/admin/attendance/staff/{id}', [StaffController::class,'adminStaffDetail']);
+        Route::get('/admin/attendance/staff/{id}', [StaffController::class,'adminStaffDetail'])->name('admin.attendance.staff.month');
         // 申請一覧画面（管理者）
-        Route::get('/admin/stamp_correction_request/list', [CorrectionController::class,'adminCorrectionList']);
+        Route::get('stamp_correction_request/list', [CorrectionController::class,'adminCorrectionList']);
         // 修正申請承認画面（管理者）
-        Route::get('/admin/stamp_correction_request/approve', [CorrectionController::class,'adminCorrection']);
+        Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [CorrectionController::class,'adminCorrection']);
     });
 
 // メール認証画面の表示

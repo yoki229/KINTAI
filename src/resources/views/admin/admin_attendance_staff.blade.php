@@ -16,4 +16,81 @@
 <!-- 本体 -->
 @section('content')
 
+<div class="attendance-list__inner">
+
+    <div class="attendance-list-content__inner">
+        {{-- タイトル --}}
+        <div class="attendance-list__title">
+            <h1 class="title">{{ $staff->name }}さんの勤怠</h1>
+        </div>
+
+        {{-- 月日メニュー --}}
+        <div class="attendance-list__date-menu">
+            <div class="date-menu">
+                <a class="date-menu__month-link" href="{{ route('admin.attendance.staff.month', ['id' => $staff->id, 'month' => $prevMonth]) }}">
+                    <i class="fa-sharp fa-solid fa-arrow-left"></i> 前月
+                </a>
+
+                <div class="date-menu__center">
+                    <div class="month-picker">
+                        <form method="get" action="{{ route('admin.attendance.staff.month', ['id' => $staff->id]) }}">
+                            <input class="month-picker__icon" type="month" name="month"
+                                value="{{ $currentMonthInput }}"
+                                onchange="this.form.submit()">
+                        </form>
+                    </div>
+                    <span class="month">
+                        {{ $currentMonth }}
+                    </span>
+                </div>
+
+                <a class="date-menu__month-link" href="{{ route('admin.attendance.staff.month', ['id' => $staff->id, 'month' => $nextMonth]) }}">
+                    翌月 <i class="fa-sharp fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        {{-- 勤怠一覧 --}}
+        <div class="attendance-list__list">
+            <table class="attendance-list">
+                <thead>
+                    <tr>
+                        <th class="list-header">日付</th>
+                        <th class="list-header">出勤</th>
+                        <th class="list-header">退勤</th>
+                        <th class="list-header">休憩</th>
+                        <th class="list-header">合計</th>
+                        <th class="list-header">詳細</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($attendances as $attendance)
+                        <tr>
+                            <td class="list-data">
+                                {{ $attendance->work_date->translatedFormat('m/d(D)') }}
+                            </td>
+                            <td class="list-data">
+                                {{ $attendance->clock_in_formatted }}
+                            </td>
+                            <td class="list-data">
+                                {{ $attendance->clock_out_formatted }}
+                            </td>
+                            <td class="list-data">
+                                {{ $attendance->break_time_formatted }}
+                            </td>
+                            <td class="list-data">
+                            {{ $attendance->work_time_formatted }}
+                            </td>
+                            <td class="list-data">
+                                <a class="list-data__detail" href="/admin/attendance/{{ $attendance->id }}">詳細</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 @endsection

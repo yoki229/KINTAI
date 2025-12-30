@@ -15,11 +15,6 @@
 
 <!-- 本体 -->
 
-{{-- 不正時アクセス時のメッセージ --}}
-@if(session('error'))
-    <p class="error">{{session('error')}}</p>
-@endif
-
 @section('content')
     <div class="attendance-list__inner">
 

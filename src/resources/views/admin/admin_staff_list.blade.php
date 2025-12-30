@@ -15,5 +15,71 @@
 
 <!-- 本体 -->
 @section('content')
+    <div class="staff-list__inner">
+        <div class="staff-list-content__inner">
+            {{-- タイトル --}}
+            <div class="staff-list__title">
+                <h1 class="title">スタッフ一覧</h1>
+            </div>
 
+            {{-- 月日メニュー --}}
+            <div class="staff-list__date-menu">
+                <div class="date-menu">
+                    <a class="date-menu__month-link" href="{{ route('attendance.month', ['month' => $prevMonth]) }}">
+                        <i class="fa-sharp fa-solid fa-arrow-left"></i> 前月
+                    </a>
+
+                    <div class="date-menu__center">
+                        <div class="month-picker">
+                            <form method="get" action="{{ route('attendance.month') }}">
+                                <input class="month-picker__icon" type="month" name="month"
+                                    value="{{ $currentMonthInput }}"
+                                    onchange="this.form.submit()">
+                            </form>
+                        </div>
+                        <span class="month">
+                            {{ $currentMonth }}
+                        </span>
+                    </div>
+
+                    <a class="date-menu__month-link" href="{{ route('attendance.month', ['month' => $nextMonth]) }}">
+                        翌月 <i class="fa-sharp fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            {{-- 勤怠一覧 --}}
+            <div class="staff-list__list">
+                <table class="staff-list">
+                    <thead>
+                        <tr>
+                            <th class="list-header"></th>
+                            <th class="list-header">名前</th>
+                            <th class="list-header">メールアドレス</th>
+                            <th class="list-header">月次勤怠</th>
+                            <th class="list-header"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach ($staffs as $staff)
+                            <tr>
+                                <td class="list-data"></td>
+                                <td class="list-data">
+                                    {{ $staff->name }}
+                                </td>
+                                <td class="list-data">
+                                    {{ $staff->email }}
+                                </td>
+                                <td class="list-data">
+                                    <a class="list-data__detail" href="/admin/attendance/staff/{{ $staff->id }}">詳細</a>
+                                </td>
+                                <td class="list-data"></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection

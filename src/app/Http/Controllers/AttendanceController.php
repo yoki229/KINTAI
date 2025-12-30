@@ -94,11 +94,6 @@ class AttendanceController extends Controller
     // 勤怠一覧画面（一般ユーザー）
     public function list(Request $request)
     {
-        $attendance = AttendanceRecord::findOrFail($id);
-        if ($attendance->user_id !== auth()->id()) {
-            return redirect('/attendance/list')->with('error', '不正なアクセスです');
-        }
-
         $user = Auth::user();
 
         // 月表示（デフォルトは今月）
