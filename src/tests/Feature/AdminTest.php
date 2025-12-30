@@ -6,6 +6,8 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\AttendanceRecord;
+use App\Models\BreakRecord;
+use App\Models\AttendanceCorrection;
 use Carbon\Carbon;
 
 class AdminTest extends TestCase
@@ -13,6 +15,41 @@ class AdminTest extends TestCase
     use RefreshDatabase;
 
     protected $seed = true;
+
+    // 11．勤怠詳細情報修正機能（一般ユーザー）(修正申請処理が実行される)
+    public function testAttendanceCorrectionRequestIsCreated()
+    {
+        $user = User::factory()->create();
+        $admin = User::factory()->admin()->create();
+        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user);
+
+        $response = $this->post("/attendance/detail/{$attendance->id}/correction", [
+            'clock_in' => '09:00',
+            'clock_out' => '18:00',
+            'note' => '勤務時間修正',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('attendance_corrections', [
+            'attendance_record_id' => $attendance->id,
+            'user_id' => $user->id,
+            'status' => AttendanceCorrection::STATUS_PENDING,
+        ]);
+
+        // 管理者ユーザーでログインし、確認する
+        $this->actingAs($admin);
+
+        $response = $this->get('/admin/stamp_correction_request/list');
+        $response->assertStatus(200);
+        $response->assertSee('勤務時間修正');
+
+        $response = $this->get('/admin/stamp_correction_request/approve');
+        $response->assertStatus(200);
+        $response->assertSee('勤務時間修正');
+    }
 
     // 12．勤怠一覧情報取得機能（管理者）(その日になされた全ユーザーの勤怠情報が正確に確認できる)
     public function testAdminSeesAllUsersAttendanceForToday()
@@ -63,6 +100,7 @@ class AdminTest extends TestCase
         $this->actingAs($admin);
         $response = $this->get('/admin/attendance/list?date=' . $today->format('Y-m-d'));
         $response->assertStatus(200);
+
         // 今日の日付が表示されているか確認
         $response->assertSee($today->format('Y/m/d'));
     }
@@ -136,7 +174,8 @@ class AdminTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($user->name);
-        $response->assertSee(today()->format('Y/m/d'));
+        $response->assertSee($attendance->work_date->format('Y年'));
+        $response->assertSee($attendance->work_date->format('n月j日'));
         $response->assertSee('09:00');
         $response->assertSee('18:00');
         $response->assertSee('テスト備考');
@@ -170,15 +209,16 @@ class AdminTest extends TestCase
 
         $this->actingAs($admin);
         $response = $this->post("/admin/attendance/{$attendance->id}", [
-            'clock_in'     => '09:00',
-            'clock_out'    => '18:00',
-            'break1_start' => '19:00',
-            'break1_end'   => '19:30',
-            'note'         => '修正理由',
+            'clock_in'  => '09:00',
+            'clock_out' => '18:00',
+            'breaks'    => [
+                ['start' => '19:00', 'end' => '19:30']
+            ],
+            'note'      => '修正理由',
         ]);
 
         $response->assertSessionHasErrors([
-            'break1_end' => '休憩時間が不適切な値です',
+            'breaks.0.start' => '休憩時間が不適切な値です',
         ]);
     }
 
@@ -194,13 +234,14 @@ class AdminTest extends TestCase
         $response = $this->post("/admin/attendance/{$attendance->id}", [
             'clock_in'     => '09:00',
             'clock_out'    => '18:00',
-            'break1_start' => '17:00',
-            'break1_end'   => '19:00',
+            'breaks'    => [
+                ['start' => '17:30', 'end' => '18:30']
+            ],
             'note'         => '修正理由',
         ]);
 
         $response->assertSessionHasErrors([
-            'break1_end' => '休憩時間もしくは退勤時間が不適切な値です',
+            'breaks.0.end' => '休憩時間もしくは退勤時間が不適切な値です',
         ]);
     }
 
@@ -226,7 +267,6 @@ class AdminTest extends TestCase
     public function testAdminCanSeeAllUsersNameAndEmail()
     {
         $admin = User::factory()->admin()->create();
-
         $users = User::factory()->count(3)->create();
 
         $this->actingAs($admin);
@@ -258,12 +298,12 @@ class AdminTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($user->name);
-        $response->assertSee('09:00');
-        $response->assertSee('18:00');
+        $response->assertSee($attendance->clock_in->format('H:i'));
+        $response->assertSee($attendance->clock_out->format('H:i'));
     }
 
-    //14．ユーザー情報取得機能（管理者）(「前日」を押下した時に表示月の前月の情報が表示される)
-    public function testAdminCanSeePreviousDayAttendance()
+    //14．ユーザー情報取得機能（管理者）(「前月」を押下した時に表示月の前月の情報が表示される)
+    public function testAdminCanSeePreviousMonthAttendance()
     {
         $admin = User::factory()->admin()->create();
         $user  = User::factory()->create();
@@ -280,11 +320,11 @@ class AdminTest extends TestCase
         );
 
         $response->assertStatus(200);
-        $response->assertSee($previousDay->format('Y年n月j日'));
+        $response->assertSee($previousDay->format('m月d日(D)'));
     }
 
-    //14．ユーザー情報取得機能（管理者）(「翌日」を押下した時に表示月の前月の情報が表示される)
-    public function testAdminCanSeeNextDayAttendance()
+    //14．ユーザー情報取得機能（管理者）(「翌月」を押下した時に表示月の翌月の情報が表示される)
+    public function testAdminCanSeeNextMonthAttendance()
     {
         $admin = User::factory()->admin()->create();
         $user  = User::factory()->create();
@@ -301,7 +341,7 @@ class AdminTest extends TestCase
         );
 
         $response->assertStatus(200);
-        $response->assertSee($nextDay->format('Y年n月j日'));
+        $response->assertSee($nextDay->format('m月d日(D)'));
     }
 
 
@@ -318,10 +358,11 @@ class AdminTest extends TestCase
 
         $this->actingAs($admin);
         $response = $this->get("/admin/attendance/{$attendance->id}");
-
         $response->assertStatus(200);
+
         $response->assertSee($user->name);
-        $response->assertSee(today()->format('Y年n月j日'));
+        $response->assertSee($attendance->work_date->format('Y年'));
+        $response->assertSee($attendance->work_date->format('n月j日'));
     }
 
     //15．勤怠情報修正機能（管理者）(承認待ちの修正申請が全て表示されている)
@@ -352,19 +393,29 @@ class AdminTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($user1->name);
         $response->assertSee($user2->name);
+        $response->assertSee($pending1->attendanceRecord->work_date->format('Y/m/d'));
+        $response->assertSee($pending2->attendanceRecord->work_date->format('Y/m/d'));
     }
 
     //15．勤怠情報修正機能（管理者）(承認済みの修正申請が全て表示されている)
     public function testAdminSeesAllApprovedCorrectionRequests()
     {
         $admin = User::factory()->admin()->create();
-        $user  = User::factory()->create();
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
 
-        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
+        $attendance1 = AttendanceRecord::factory()->create(['user_id' => $user1->id]);
+        $attendance2 = AttendanceRecord::factory()->create(['user_id' => $user2->id]);
 
-        $approved = AttendanceCorrection::factory()->create([
-            'attendance_record_id' => $attendance->id,
-            'user_id' => $user->id,
+        $approved1 = AttendanceCorrection::factory()->create([
+            'attendance_record_id' => $attendance1->id,
+            'user_id' => $user1->id,
+            'status'  => AttendanceCorrection::STATUS_APPROVED,
+        ]);
+
+        $approved2 = AttendanceCorrection::factory()->create([
+            'attendance_record_id' => $attendance2->id,
+            'user_id' => $user2->id,
             'status'  => AttendanceCorrection::STATUS_APPROVED,
         ]);
 
@@ -372,7 +423,10 @@ class AdminTest extends TestCase
         $response = $this->get('/admin/stamp_correction_request/list?tab=approved');
 
         $response->assertStatus(200);
-        $response->assertSee($user->name);
+        $response->assertSee($user1->name);
+        $response->assertSee($user2->name);
+        $response->assertSee($approved1->attendanceRecord->work_date->format('Y/m/d'));
+        $response->assertSee($approved2->attendanceRecord->work_date->format('Y/m/d'));
     }
 
     //15．勤怠情報修正機能（管理者）(修正申請の詳細内容が正しく表示されている)
@@ -397,8 +451,8 @@ class AdminTest extends TestCase
         $response = $this->get('/admin/stamp_correction_request/approve?id=' . $correction->id);
 
         $response->assertStatus(200);
-        $response->assertSee('09:00');
-        $response->assertSee('18:00');
+        $response->assertSee($correction->clock_in->format('H:i'));
+        $response->assertSee($correction->clock_out->format('H:i'));
         $response->assertSee('修正理由');
     }
 

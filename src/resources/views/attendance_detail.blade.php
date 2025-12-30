@@ -36,7 +36,7 @@
 
         {{-- 申請フォーム --}}
         <div class="attendance-detail-form__inner">
-            <form action="/attendance/detail/{{ $attendance->id }}/Correction" method="post" novalidate>
+            <form action="/attendance/detail/{{ $attendance->id }}/correction" method="post" novalidate>
             @csrf
                 <table class="attendance-detail-form__table">
                     <colgroup>

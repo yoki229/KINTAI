@@ -26,7 +26,7 @@ Route::middleware(['auth','verified'])->group(function () {
     // 勤怠詳細画面（一般ユーザー）
     Route::get('/attendance/detail/{id}', [AttendanceController::class,'detail']);
     // 勤怠詳細画面から申請（一般ユーザー）
-    Route::post('/attendance/detail/{id}/Correction', [AttendanceController::class,'requestCorrection']);
+    Route::post('/attendance/detail/{id}/correction', [AttendanceController::class,'requestCorrection']);
 
     // 申請一覧（ユーザー側）
     Route::get('/stamp_correction_request/list', [AttendanceController::class,'myCorrection']);
@@ -43,6 +43,8 @@ Route::middleware(['auth','verified'])->group(function () {
         Route::get('/admin/attendance/list', [AdminAttendanceController::class,'adminList']);
         // 勤怠詳細画面（管理者）
         Route::get('admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendance']);
+        // 勤怠詳細画面から修正（管理者）
+        Route::post('admin/attendance/{id}', [AdminAttendanceController::class,'adminAttendance']);
         // スタッフ一覧画面（管理者）
         Route::get('/admin/staff/list', [StaffController::class,'adminStaffList']);
         // スタッフ別勤怠一覧画面（管理者）

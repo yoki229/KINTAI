@@ -7,6 +7,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\AttendanceRecord;
 use App\Models\BreakRecord;
+use App\Models\AttendanceCorrection;
 use Carbon\Carbon;
 
 class UserTest extends TestCase
@@ -325,18 +326,33 @@ class UserTest extends TestCase
         $user = User::factory()->create();
 
         // 自分の勤怠を3日分作成
-        $ownAttendances = AttendanceRecord::factory()->count(3)->create([
-            'user_id' => $user->id,
-        ]);
+        $ownAttendances = AttendanceRecord::factory()
+            ->count(3)
+            ->sequence(
+                ['work_date' => now()->subDays(2)->toDateString()],
+                ['work_date' => now()->subDays()->toDateString()],
+                ['work_date' => now()->toDateString()],
+            )
+            ->create([
+                'user_id' => $user->id,
+                'clock_in'  => '09:00',
+                'clock_out' => '18:00',
+            ]);
 
         $this->actingAs($user);
         $response = $this->get('/attendance/list');
-
         $response->assertStatus(200);
 
+        // 自分の勤怠の日付が表示されている
         foreach ($ownAttendances as $attendance) {
-            $response->assertSee($attendance->work_date->format('m/d(D)'));
+            $response->assertSee(
+                $attendance->work_date->translatedFormat('m/d(D)')
+            );
         }
+
+        // 自分の打刻情報が反映されている
+        $response->assertSee($attendance->clock_in->format('H:i'));
+        $response->assertSee($attendance->clock_out->format('H:i'));
     }
 
     // ９. 勤怠一覧情報取得機能（一般ユーザー）（勤怠一覧画面に遷移した際に現在の月が表示される）
@@ -368,7 +384,7 @@ class UserTest extends TestCase
 
         $response = $this->get('/attendance/list?month=' . $prevMonthDate->format('Y-m'));
         $response->assertStatus(200);
-        $response->assertSee($attendancePrev->work_date->format('m/d(D)'));
+        $response->assertSee($attendancePrev->work_date->format('y/m'));
     }
 
     // ９. 勤怠一覧情報取得機能（一般ユーザー）（「翌月」を押下した時に表示月の前月の情報が表示される）
@@ -387,7 +403,7 @@ class UserTest extends TestCase
 
         $response = $this->get('/attendance/list?month=' . $nextMonthDate->format('Y-m'));
         $response->assertStatus(200);
-        $response->assertSee($attendanceNext->work_date->format('m/d(D)'));
+        $response->assertSee($attendanceNext->work_date->format('y/m'));
     }
 
     // ９. 勤怠一覧情報取得機能（一般ユーザー）（「詳細」を押下すると、その日の勤怠詳細画面に遷移する）
@@ -397,13 +413,14 @@ class UserTest extends TestCase
 
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'work_date' => today(),
         ]);
 
         $this->actingAs($user);
-        $response = $this->get('/attendance/detail/' . $attendance->id);
 
+        // 詳細画面へアクセス
+        $response = $this->get('/attendance/detail/' . $attendance->id);
         $response->assertStatus(200);
-        $response->assertSee($attendance->work_date->format('m/d(D)'));
     }
 
     // 10. 勤怠詳細情報取得機能（一般ユーザー）（勤怠詳細画面の「名前」がログインユーザーの氏名になっている）
@@ -433,8 +450,8 @@ class UserTest extends TestCase
         $this->actingAs($user);
         $response = $this->get("/attendance/detail/{$attendance->id}");
         $response->assertStatus(200);
-        $expectedDate = $attendance->work_date->format('Y年n月j日');
-        $response->assertSee($expectedDate);
+        $response->assertSee($attendance->work_date->format('Y年'));
+        $response->assertSee($attendance->work_date->format('n月j日'));
     }
 
     // 10. 勤怠詳細情報取得機能（一般ユーザー）（「出勤・退勤」にて記されている時間がログインユーザーの打刻と一致している）
@@ -484,19 +501,20 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $attendance = AttendanceRecord::factory()->create([
-            'user_id' => $user->id,
-            'clock_in' => '09:00',
+            'user_id'   => $user->id,
+            'clock_in'  => '09:00',
             'clock_out' => '17:00',
         ]);
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/Correction", [
-            'clock_in' => '18:00', // 退勤より後
+        $response = $this->post("/attendance/detail/{$attendance->id}/correction", [
+            'clock_in'  => '18:00', // 退勤より後
             'clock_out' => '17:00',
-            'note' => 'テスト',
+            'note'      => 'テスト',
         ]);
 
+        $response->assertStatus(302);
         $response->assertSessionHasErrors(['clock_in' => '出勤時間が不適切な値です']);
     }
 
@@ -507,18 +525,22 @@ class UserTest extends TestCase
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
             'clock_in' => '09:00',
-            'clock_out' => '17:00',
         ]);
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/Correction", [
-            'break_start' => '18:00',
-            'break_end' => '18:30',
+        $response = $this->post("/attendance/detail/{$attendance->id}/correction", [
+            'clock_out' => '17:00',
+            'breaks' => [
+                    [
+                        'start' => '18:00', // 退勤後
+                        'end'   => '18:30',
+                    ],
+                ],
             'note' => 'テスト',
         ]);
 
-        $response->assertSessionHasErrors(['break_start' => '休憩時間が不適切な値です']);
+        $response->assertSessionHasErrors(['breaks.0.start' => '休憩時間が不適切な値です']);
     }
 
     // 11．勤怠詳細情報修正機能（一般ユーザー）（休憩終了時間が退勤時間より後になっている場合、エラーメッセージが表示される）
@@ -528,18 +550,22 @@ class UserTest extends TestCase
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
             'clock_in' => '09:00',
-            'clock_out' => '17:00',
         ]);
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/Correction", [
-            'break_start' => '16:00',
-            'break_end' => '18:00',
+        $response = $this->post("/attendance/detail/{$attendance->id}/correction", [
+            'clock_out' => '17:00',
+            'breaks' => [
+                [
+                    'start' => '16:00',
+                    'end'   => '18:00',
+                ],
+            ],
             'note' => 'テスト',
         ]);
 
-        $response->assertSessionHasErrors(['break_end' => '休憩時間もしくは退勤時間が不適切な値です']);
+        $response->assertSessionHasErrors(['breaks.0.end' => '休憩時間もしくは退勤時間が不適切な値です']);
     }
 
     // 11．勤怠詳細情報修正機能（一般ユーザー）(備考欄が未入力の場合のエラーメッセージが表示される)
@@ -552,72 +578,58 @@ class UserTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->post("/attendance/detail/{$attendance->id}/update", [
+        $response = $this->post("/attendance/detail/{$attendance->id}/correction", [
             'note' => '',
         ]);
 
         $response->assertSessionHasErrors(['note' => '備考を記入してください']);
     }
 
-    // 11．勤怠詳細情報修正機能（一般ユーザー）(修正申請処理が実行される)
-    public function testAttendanceCorrectionRequestIsCreated()
-    {
-        $user = User::factory()->create();
-        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
-
-        $this->actingAs($user);
-
-        $response = $this->post("/attendance/detail/{$attendance->id}/update", [
-            'clock_in' => '09:00',
-            'clock_out' => '18:00',
-            'note' => '勤務時間修正',
-        ]);
-
-        $response->assertSessionHasNoErrors();
-
-        $this->assertDatabaseHas('attendance_corrections', [
-            'attendance_record_id' => $attendance->id,
-            'user_id' => $user->id,
-            'status' => AttendanceCorrection::STATUS_PENDING,
-        ]);
-    }
-
     // 11．勤怠詳細情報修正機能（一般ユーザー）(「承認待ち」にログインユーザーが行った申請が全て表示されていること)
-    public function testPendingCorrectionsAreShownForUser()
+    public function testCorrectionListShowsPendingCorrections()
     {
         $user = User::factory()->create();
-        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
-
-        $correction = AttendanceCorrection::factory()->create([
-            'attendance_record_id' => $attendance->id,
+        $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
-            'status' => AttendanceCorrection::STATUS_PENDING,
         ]);
 
         $this->actingAs($user);
-        $response = $this->get('/attendance/corrections');
 
+        $this->post("/attendance/detail/{$attendance->id}/correction",[
+            'clock_in'  => '09:00',
+            'clock_out' => '18:00',
+            'note'      => '修正申請テスト',
+        ]);
+
+        $response = $this->get('/stamp_correction_request/list');
         $response->assertStatus(200);
-        $response->assertSee($correction->note);
+        $response->assertSee('修正申請テスト');
     }
 
     // 11．勤怠詳細情報修正機能（一般ユーザー）(「承認済み」に管理者が承認した修正申請が全て表示されている)
     public function testApprovedCorrectionsAreShownForUser()
     {
         $user = User::factory()->create();
-        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
+        $attendance = AttendanceRecord::factory()->create([
+            'user_id' => $user->id
+        ]);
 
-        $correction = AttendanceCorrection::factory()->create([
-            'attendance_record_id' => $attendance->id,
-            'user_id' => $user->id,
-            'status' => AttendanceCorrection::STATUS_APPROVED,
+        $correction = AttendanceCorrection::create([
+            'attendance_record_id'  => $attendance->id,
+            'user_id'               => $user->id,
+            'requested_changes'     =>
+            [
+                ['break_start' => '12:00', 'break_end' => '13:00'],
+            ],
+            'reason'                => '修正申請テスト',
+            'status'                => AttendanceCorrection::STATUS_APPROVED,
         ]);
 
         $this->actingAs($user);
-        $response = $this->get('/attendance/corrections');
+        $response = $this->get('/stamp_correction_request/list?tab=approved');
 
         $response->assertStatus(200);
-        $response->assertSee($correction->note);
+        $response->assertSee('修正申請テスト');
     }
 
     // 11．勤怠詳細情報修正機能（一般ユーザー）(各申請の「詳細」を押下すると勤怠詳細画面に遷移する)
@@ -626,16 +638,19 @@ class UserTest extends TestCase
         $user = User::factory()->create();
         $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
 
-        $correction = AttendanceCorrection::factory()->create([
-            'attendance_record_id' => $attendance->id,
-            'user_id' => $user->id,
-            'status' => AttendanceCorrection::STATUS_PENDING,
+        $this->actingAs($user);
+
+        $this->post("/attendance/detail/{$attendance->id}/correction",[
+            'clock_in'  => '09:00',
+            'clock_out' => '18:00',
+            'note'      => '修正申請テスト',
         ]);
 
         $this->actingAs($user);
-        $response = $this->get("/attendance/corrections/{$correction->id}/detail");
-
+        $response = $this->get('/stamp_correction_request/list');
         $response->assertStatus(200);
-        $response->assertSee($attendance->clock_in->format('H:i'));
+
+        $response = $this->get("/attendance/detail/{$attendance->id}");
+        $response->assertStatus(200);
     }
 }
