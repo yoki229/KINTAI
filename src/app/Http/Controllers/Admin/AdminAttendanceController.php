@@ -18,7 +18,7 @@ class AdminAttendanceController extends Controller
         $user = Auth::user();
 
         // 日付表示（デフォルトは今日）
-        $day = $request->date ? Carbon::createFromFormat('Y-m-d', $request->date) : Carbon::today();
+        $day = $request->day ? Carbon::createFromFormat('Y-m-d', $request->day) : Carbon::today();
 
         // 前日・翌日（リンク）
         $prevDay = $day->copy()->subDay()->format('Y-m-d');
@@ -29,12 +29,9 @@ class AdminAttendanceController extends Controller
         $currentDayInput = $day->format('Y-m-d');
 
         $attendances = AttendanceRecord::with('user', 'breaks')
-            ->where('work_date', $day->toDateString())
-            ->get()
-            ->map(function ($record){
-                $record->name = $record->user->name;
-                return $record;
-            });
+            ->whereDate('work_date', $day)
+            ->whereNotNull('clock_in')
+            ->get();
 
         return view('admin.admin_attendance_list', compact(
             'attendances', 'prevDay', 'nextDay', 'currentDay', 'currentDayInput'

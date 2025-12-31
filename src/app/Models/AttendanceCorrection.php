@@ -41,4 +41,10 @@ class AttendanceCorrection extends Model
     {
         return $query->where('status', self::STATUS_APPROVED);
     }
+
+    // アクセサ note→reason
+    public function getReasonAttribute()
+    {
+        return $this->requested_changes['note'] ?? '';
+    }
 }

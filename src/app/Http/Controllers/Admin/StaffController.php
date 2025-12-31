@@ -13,19 +13,6 @@ class StaffController extends Controller
 {
     public function adminStaffList(Request $request)
     {
-        // 月（デフォルト：今月）
-        $month = $request->month
-            ? Carbon::createFromFormat('Y-m', $request->month)
-            : Carbon::now();
-
-        // 前月・翌月（リンク用）
-        $prevMonth = $month->copy()->subMonth()->format('Y-m');
-        $nextMonth = $month->copy()->addMonth()->format('Y-m');
-
-        // 表示用
-        $currentMonth = $month->format('Y/m');
-        $currentMonthInput = $month->format('Y-m');
-
         // スタッフ一覧（管理者以外）
         $staffs = User::where('role', 'user')
             ->orderBy('name')
@@ -33,10 +20,6 @@ class StaffController extends Controller
 
         return view('admin.admin_staff_list', compact(
             'staffs',
-            'prevMonth',
-            'nextMonth',
-            'currentMonth',
-            'currentMonthInput'
         ));
     }
 

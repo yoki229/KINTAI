@@ -124,7 +124,7 @@ class AdminTest extends TestCase
         ]);
 
         $this->actingAs($admin, 'admin');
-        $response = $this->get('/admin/attendance/list?date=' . $yesterday->format('Y-m-d'));
+        $response = $this->get('/admin/attendance/list?day=' . $yesterday->format('Y-m-d'));
         $response->assertStatus(200);
         $response->assertSee($yesterday->format('Y年n月j日'));
         $response->assertSee($user->name);
@@ -149,7 +149,7 @@ class AdminTest extends TestCase
         ]);
 
         $this->actingAs($admin, 'admin');
-        $response = $this->get('/admin/attendance/list?date=' . $tomorrow->format('Y-m-d'));
+        $response = $this->get('/admin/attendance/list?day=' . $tomorrow->format('Y-m-d'));
         $response->assertStatus(200);
         $response->assertSee($tomorrow->format('Y年n月j日'));
         $response->assertSee($user->name);

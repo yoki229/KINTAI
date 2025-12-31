@@ -28,7 +28,7 @@ Route::middleware(['auth','verified'])->group(function () {
 });
 
 // 一般・管理者 共通
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web,admin'])->group(function () {
     Route::get('/stamp_correction_request/list',[CorrectionController::class, 'correctionList']);
 });
 

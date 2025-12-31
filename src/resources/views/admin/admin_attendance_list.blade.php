@@ -68,7 +68,7 @@
                         @foreach ($attendances as $attendance)
                             <tr>
                                 <td class="list-data">
-                                    {{ $attendance->name }}
+                                    {{ $attendance->user->name }}
                                 </td>
                                 <td class="list-data">
                                     {{ $attendance->clock_in_formatted }}
