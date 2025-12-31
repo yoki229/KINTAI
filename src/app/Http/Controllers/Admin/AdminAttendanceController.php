@@ -18,7 +18,7 @@ class AdminAttendanceController extends Controller
         $user = Auth::user();
 
         // 日付表示（デフォルトは今日）
-        $day = $request->day ? Carbon::createFromFormat('Y-m-d', $request->day) : Carbon::today();
+        $day = $request->date ? Carbon::createFromFormat('Y-m-d', $request->date) : Carbon::today();
 
         // 前日・翌日（リンク）
         $prevDay = $day->copy()->subDay()->format('Y-m-d');

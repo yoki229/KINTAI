@@ -1,0 +1,27 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\AttendanceCorrection;
+use App\Models\AttendanceRecord;
+
+class AttendanceCorrectionFactory extends Factory
+{
+    protected $model = AttendanceCorrection::class;
+
+    public function definition()
+    {
+        $attendance = AttendanceRecord::factory()->create();
+
+        return [
+            'attendance_record_id'  => $attendance->id,
+            'user_id'               => $attendance->user_id,
+            'status'                => AttendanceCorrection::STATUS_PENDING,
+            'requested_changes'    => [
+                'clock_in'  => '10:00',
+                'clock_out' => '19:00',
+            ],
+        ];
+    }
+}

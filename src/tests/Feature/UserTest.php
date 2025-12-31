@@ -515,7 +515,7 @@ class UserTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertSessionHasErrors(['clock_in' => '出勤時間が不適切な値です']);
+        $response->assertSessionHasErrors(['clock_in' => '出勤時間もしくは退勤時間が不適切な値です']);
     }
 
     // 11. 勤怠詳細情報修正機能（一般ユーザー）（休憩開始時間が退勤時間より後になっている場合、エラーメッセージが表示される）

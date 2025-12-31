@@ -78,7 +78,17 @@
                                 {{ $correction->created_at->format('Y/m/d') }}
                             </td>
                             <td class="list-data">
-                                <a class="list-data__detail" href="/attendance/detail/{{ $correction->attendance_record_id }}">詳細</a>
+                            @if ($user->is_admin)
+                                <a class="list-data__detail"
+                                href="{{ url('/stamp_correction_request/approve/'.$correction->id) }}">
+                                    詳細
+                                </a>
+                            @else
+                                <a class="list-data__detail"
+                                href="{{ url('/attendance/detail/'.$correction->attendance_record_id) }}">
+                                    詳細
+                                </a>
+                            @endif
                             </td>
                         </tr>
                     @endforeach

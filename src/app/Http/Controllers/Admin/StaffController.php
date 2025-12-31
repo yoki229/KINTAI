@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\AttendanceRecord;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class StaffController extends Controller
 {

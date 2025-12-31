@@ -15,6 +15,12 @@
 
 <!-- 本体 -->
 @section('content')
+
+{{-- 承認完了メッセージ --}}
+@if(session('success'))
+    <p class="success">{{session('success')}}</p>
+@endif
+
 <div class="attendance-detail__inner">
 
     <div class="attendance-detail-content__inner">
@@ -25,7 +31,7 @@
 
         {{-- 申請フォーム --}}
         <div class="attendance-detail-form__inner">
-            <form action="/attendance/detail/{{ $attendance->id }}/correction" method="post" novalidate>
+            <form action="/stamp_correction_request/approve/{{ $correction->id }}" method="post" novalidate>
             @csrf
                 <table class="attendance-detail-form__table">
                     <colgroup>
@@ -63,35 +69,15 @@
                         <th class="attendance-detail-form__label">出勤・退勤</th>
                         <td class="attendance-detail-form__data">
                             <div class="form__clock-inputs">
-                                @if($isPending)
-                                    <span class="plain-text">
-                                        {{ $changes['clock_in'] ?? '' }}
-                                    </span>
-                                    <span class="plain-text">
-                                        ～
-                                    </span>
-                                    <span class="plain-text">
-                                        {{ $changes['clock_out'] ?? '' }}
-                                    </span>
-                                @else
-                                    <div class="clock-inputs__item">
-                                        <input class="form__clock-input" type="time" name="clock_in"
-                                            value="{{ old('clock_in', $attendance->clock_in_formatted) }}">
-                                    </div>
-                                    <span class="clock-inputs__item">～</span>
-                                    <div class="clock-inputs__item">
-                                        <input class="form__clock-input" type="time" name="clock_out"
-                                            value="{{ old('clock_out', $attendance->clock_out_formatted) }}">
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="form__error-message">
-                                @error('clock_in')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                                @error('clock_out')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
+                                <span class="plain-text">
+                                    {{ $changes['clock_in'] ?? $attendance->clock_in_formatted }}
+                                </span>
+                                <span class="plain-text">
+                                    ～
+                                </span>
+                                <span class="plain-text">
+                                    {{ $changes['clock_out'] ?? $attendance->clock_out_formatted }}
+                                </span>
                             </div>
                         </td>
                         <td class="space"></td>
@@ -105,49 +91,13 @@
                         </th>
                         <td class="attendance-detail-form__data">
                             <div class="form__clock-inputs">
-                                @if($isPending)
-                                    <span class="plain-text">
-                                        {{ $changes['breaks'][$index]['start'] ?? $break->break_start_formatted ?? '' }}
-                                    </span>
-                                    <span class="plain-text">～</span>
-                                    <span class="plain-text">
-                                        {{ $changes['breaks'][$index]['end'] ?? $break->break_end_formatted ?? '' }}
-                                    </span>
-                                @else
-                                    <div class="clock-inputs__item">
-                                        <input
-                                            class="form__clock-input"
-                                            type="time"
-                                            name="breaks[{{ $index }}][start]"
-                                            @if(old("breaks.$index.start") !== null)
-                                                value="{{ old("breaks.$index.start") }}"
-                                            @elseif($break->break_start)
-                                                value="{{ $break->break_start_formatted }}"
-                                            @endif
-                                        >
-                                    </div>
-                                    <span class="clock-inputs__item">～</span>
-                                    <div class="clock-inputs__item">
-                                        <input
-                                            class="form__clock-input"
-                                            type="time"
-                                            name="breaks[{{ $index }}][end]"
-                                            @if(old("breaks.$index.end") !== null)
-                                                value="{{ old("breaks.$index.end") }}"
-                                            @elseif($break->break_end)
-                                                value="{{ $break->break_end_formatted }}"
-                                            @endif
-                                        >
-                                </div>
-                                @endif
-                            </div>
-                            <div class="form__error-message">
-                                @error("breaks.$index.start")
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                                @error("breaks.$index.end")
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
+                                <span class="plain-text">
+                                {{ $changes['breaks'][$index]['start'] ?? $break->break_start_formatted ?? '' }}
+                                </span>
+                                <span class="plain-text">～</span>
+                                <span class="plain-text">
+                                {{ $changes['breaks'][$index]['end'] ?? $break->break_end_formatted ?? '' }}
+                                </span>
                             </div>
                         </td>
                         <td class="space"></td>
@@ -158,27 +108,18 @@
                     <tr class="attendance-detail-form__row">
                         <th class="attendance-detail-form__label">備考</th>
                         <td class="attendance-detail-form__data">
-                            @if($isPending)
-                                <div class="plain-text--note">
-                                    {{ $changes['note'] ?? '' }}
-                                </div>
-                            @else
-                                <textarea class="note" name="note" rows="3">{{ old('note', $attendance->note ?? '') }}</textarea>
-                            @endif
-                            <div class="form__error-message">
-                            @error('note')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
+                            <div class="plain-text--note">
+                                {{ $changes['note'] ?? $attendance->note ?? '' }}
                             </div>
                         </td>
                         <td class="space"></td>
                     </tr>
                 </table>
                 <div class="attendance-detail-form__btn-inner">
-                    @if($isPending)
-                        <p class="pending-message">・承認待ちのため修正はできません。</p>
+                    @if ($correction->status === 'pending')
+                        <button class="pending-button" type="submit">承認</button>
                     @else
-                        <button class="request-button" type="submit">修正</button>
+                        <p class="approved-message">承認済みです。</p>
                     @endif
                 </div>
             </form>

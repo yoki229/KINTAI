@@ -177,31 +177,4 @@ class AttendanceController extends Controller
         return redirect()->back()->with('success', '勤怠修正を申請しました');
     }
 
-    // 申請一覧（ユーザー側）
-    public function myCorrection(Request $request)
-    {
-        $user = auth()->user();
-        $tab = $request->input('tab','pending');
-
-        $query = AttendanceCorrection::where('user_id', $user->id);
-
-        if ($tab === 'approved') {
-            $query->approved();
-        } else {
-            $query->pending();
-        }
-
-        $corrections = $query
-            ->with([
-                'user:id,name',
-                'attendanceRecord:id,work_date',
-            ])
-            ->latest()
-            ->get();
-
-        return view(
-            'stamp_correction_request_list',
-            compact('corrections', 'tab')
-        );
-    }
 }

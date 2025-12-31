@@ -14,6 +14,7 @@ class AttendanceRecordFactory extends Factory
     public function definition()
     {
         return [
+            'user_id'   => User::factory(),
             'work_date' => $this->faker
                             ->dateTimeBetween('-2 months','now')
                             ->format('Y-m-d'),

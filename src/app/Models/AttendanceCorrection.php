@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AttendanceCorrection extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'attendance_record_id','user_id','requested_changes',
         'reason','status','processed_by','processed_at'

@@ -25,28 +25,30 @@ class AdminTest extends TestCase
 
         $this->actingAs($user);
 
+        // 申請する
         $response = $this->post("/attendance/detail/{$attendance->id}/correction", [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'note' => '勤務時間修正',
         ]);
-
         $response->assertSessionHasNoErrors();
 
+        // ＤＢに保存
         $this->assertDatabaseHas('attendance_corrections', [
             'attendance_record_id' => $attendance->id,
             'user_id' => $user->id,
             'status' => AttendanceCorrection::STATUS_PENDING,
         ]);
+        $correction = AttendanceCorrection::first();
 
         // 管理者ユーザーでログインし、確認する
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
 
-        $response = $this->get('/admin/stamp_correction_request/list');
+        $response = $this->get("/stamp_correction_request/list");
         $response->assertStatus(200);
         $response->assertSee('勤務時間修正');
 
-        $response = $this->get('/admin/stamp_correction_request/approve');
+        $response = $this->get("/stamp_correction_request/approve/{$correction->id}");
         $response->assertStatus(200);
         $response->assertSee('勤務時間修正');
     }
@@ -77,7 +79,7 @@ class AdminTest extends TestCase
         ]);
 
         // 管理者でログイン
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
 
         // 勤怠一覧画面にアクセス
         $response = $this->get('/admin/attendance/list?date=' . $today->format('Y-m-d'));
@@ -97,12 +99,12 @@ class AdminTest extends TestCase
         $admin = User::factory()->admin()->create();
         $today = today();
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get('/admin/attendance/list?date=' . $today->format('Y-m-d'));
         $response->assertStatus(200);
 
         // 今日の日付が表示されているか確認
-        $response->assertSee($today->format('Y/m/d'));
+        $response->assertSee($today->format('Y年n月j日'));
     }
 
     // 12．勤怠一覧情報取得機能（管理者）(「前日」を押下した時に前の日の勤怠情報が表示される)
@@ -121,7 +123,7 @@ class AdminTest extends TestCase
             'clock_out' => $yesterday->copy()->hour(17)->minute(0),
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get('/admin/attendance/list?date=' . $yesterday->format('Y-m-d'));
         $response->assertStatus(200);
         $response->assertSee($yesterday->format('Y年n月j日'));
@@ -146,7 +148,7 @@ class AdminTest extends TestCase
             'clock_out' => $tomorrow->copy()->hour(17)->minute(0),
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get('/admin/attendance/list?date=' . $tomorrow->format('Y-m-d'));
         $response->assertStatus(200);
         $response->assertSee($tomorrow->format('Y年n月j日'));
@@ -169,7 +171,7 @@ class AdminTest extends TestCase
             'note'      => 'テスト備考',
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get("/admin/attendance/{$attendance->id}");
 
         $response->assertStatus(200);
@@ -184,10 +186,13 @@ class AdminTest extends TestCase
     //13．勤怠詳細情報取得・修正機能（管理者）(出勤時間が退勤時間より後になっている場合、エラーメッセージが表示される)
     public function testAdminGetsErrorWhenClockInIsAfterClockOut()
     {
+        $user = User::factory()->create();
         $admin = User::factory()->admin()->create();
-        $attendance = AttendanceRecord::factory()->create();
+        $attendance = AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->post("/admin/attendance/{$attendance->id}", [
             'clock_in'  => '18:00',
             'clock_out' => '09:00',
@@ -202,12 +207,14 @@ class AdminTest extends TestCase
     //13．勤怠詳細情報取得・修正機能（管理者）(休憩開始時間が退勤時間より後になっている場合、エラーメッセージが表示される)
     public function testAdminGetsErrorWhenBreakStartIsAfterClockOut()
     {
+        $user = User::factory()->create();
         $admin = User::factory()->admin()->create();
         $attendance = AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
             'clock_out' => today()->setTime(18, 0),
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->post("/admin/attendance/{$attendance->id}", [
             'clock_in'  => '09:00',
             'clock_out' => '18:00',
@@ -225,12 +232,14 @@ class AdminTest extends TestCase
     //13．勤怠詳細情報取得・修正機能（管理者）(休憩終了時間が退勤時間より後になっている場合、エラーメッセージが表示される)
     public function testAdminGetsErrorWhenBreakEndIsAfterClockOut()
     {
+        $user = User::factory()->create();
         $admin = User::factory()->admin()->create();
         $attendance = AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
             'clock_out' => today()->setTime(18, 0),
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->post("/admin/attendance/{$attendance->id}", [
             'clock_in'     => '09:00',
             'clock_out'    => '18:00',
@@ -248,11 +257,15 @@ class AdminTest extends TestCase
     //13．勤怠詳細情報取得・修正機能（管理者）(備考欄が未入力の場合のエラーメッセージが表示される)
     public function testAdminGetsErrorWhenNoteIsEmpty()
     {
+        $user = User::factory()->create();
         $admin = User::factory()->admin()->create();
-        $attendance = AttendanceRecord::factory()->create();
+        $attendance = AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->post("/admin/attendance/{$attendance->id}", [
+            'user_id' => $user->id,
             'clock_in'  => '09:00',
             'clock_out' => '18:00',
             'note'      => '',
@@ -269,7 +282,7 @@ class AdminTest extends TestCase
         $admin = User::factory()->admin()->create();
         $users = User::factory()->count(3)->create();
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get('/admin/staff/list');
 
         $response->assertStatus(200);
@@ -293,7 +306,7 @@ class AdminTest extends TestCase
             'clock_out' => today()->setTime(18, 0),
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get("/admin/attendance/staff/{$user->id}");
 
         $response->assertStatus(200);
@@ -307,20 +320,21 @@ class AdminTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $user  = User::factory()->create();
-        $previousDay = today()->subDay();
+        $previousMonth = today()->subMonth();
 
         $attendance = AttendanceRecord::factory()->create([
             'user_id'   => $user->id,
-            'work_date' => $previousDay,
+            'work_date' => $previousMonth,
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get(
-            "/admin/attendance/staff/{$user->id}?date=" . $previousDay->format('Y-m-d')
+            "/admin/attendance/staff/{$user->id}?month=" . $previousMonth->format('Y-m')
         );
 
         $response->assertStatus(200);
-        $response->assertSee($previousDay->format('m月d日(D)'));
+        $weekdays = ['日','月','火','水','木','金','土'];
+        $response->assertSee($previousMonth->format('m/d') . '(' . $weekdays[$previousMonth->dayOfWeek] . ')');
     }
 
     //14．ユーザー情報取得機能（管理者）(「翌月」を押下した時に表示月の翌月の情報が表示される)
@@ -328,20 +342,21 @@ class AdminTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $user  = User::factory()->create();
-        $nextDay = today()->addDay();
+        $nextMonth = today()->addMonth();
 
         $attendance = AttendanceRecord::factory()->create([
             'user_id'   => $user->id,
-            'work_date' => $nextDay,
+            'work_date' => $nextMonth,
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get(
-            "/admin/attendance/staff/{$user->id}?date=" . $nextDay->format('Y-m-d')
+            "/admin/attendance/staff/{$user->id}?month=" . $nextMonth->format('Y-m')
         );
 
         $response->assertStatus(200);
-        $response->assertSee($nextDay->format('m月d日(D)'));
+        $weekdays = ['日','月','火','水','木','金','土'];
+        $response->assertSee($nextMonth->format('m/d') . '(' . $weekdays[$nextMonth->dayOfWeek] . ')');
     }
 
 
@@ -356,7 +371,7 @@ class AdminTest extends TestCase
             'work_date' => today(),
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
         $response = $this->get("/admin/attendance/{$attendance->id}");
         $response->assertStatus(200);
 
@@ -387,8 +402,8 @@ class AdminTest extends TestCase
             'status'  => AttendanceCorrection::STATUS_PENDING,
         ]);
 
-        $this->actingAs($admin);
-        $response = $this->get('/admin/stamp_correction_request/list?tab=pending');
+        $this->actingAs($admin, 'admin');
+        $response = $this->get('/stamp_correction_request/list?tab=pending');
 
         $response->assertStatus(200);
         $response->assertSee($user1->name);
@@ -419,8 +434,8 @@ class AdminTest extends TestCase
             'status'  => AttendanceCorrection::STATUS_APPROVED,
         ]);
 
-        $this->actingAs($admin);
-        $response = $this->get('/admin/stamp_correction_request/list?tab=approved');
+        $this->actingAs($admin, 'admin');
+        $response = $this->get('/stamp_correction_request/list?tab=approved');
 
         $response->assertStatus(200);
         $response->assertSee($user1->name);
@@ -447,13 +462,13 @@ class AdminTest extends TestCase
             ],
         ]);
 
-        $this->actingAs($admin);
-        $response = $this->get('/admin/stamp_correction_request/approve?id=' . $correction->id);
+        $this->actingAs($admin, 'admin');
+        $response = $this->get('/stamp_correction_request/approve/' . $correction->id);
 
         $response->assertStatus(200);
-        $response->assertSee($correction->clock_in->format('H:i'));
-        $response->assertSee($correction->clock_out->format('H:i'));
-        $response->assertSee('修正理由');
+        $response->assertSee($correction->requested_changes['clock_in']);
+        $response->assertSee($correction->requested_changes['clock_out']);
+        $response->assertSee($correction->requested_changes['note']);
     }
 
     //15．勤怠情報修正機能（管理者）(修正申請の承認処理が正しく行われる)
@@ -478,11 +493,9 @@ class AdminTest extends TestCase
             'status' => AttendanceCorrection::STATUS_PENDING,
         ]);
 
-        $this->actingAs($admin);
+        $this->actingAs($admin, 'admin');
 
-        $response = $this->post('/admin/stamp_correction_request/approve', [
-            'correction_id' => $correction->id,
-        ]);
+        $response = $this->post('/stamp_correction_request/approve/' . $correction->id);
 
         $response->assertRedirect();
 
@@ -493,8 +506,8 @@ class AdminTest extends TestCase
 
         $this->assertDatabaseHas('attendance_records', [
             'id'        => $attendance->id,
-            'clock_in'  => '09:00',
-            'clock_out' => '18:00',
+            'clock_in'  => '09:00:00',
+            'clock_out' => '18:00:00',
         ]);
     }
 
