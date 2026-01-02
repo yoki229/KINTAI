@@ -7,26 +7,11 @@
 1. `git clone git@github.com:yoki229/KINTAI.git`
 2. `cd KINTAI`
 3. DockerDesktop アプリを立ち上げる
-4. `docker-compose up -d --build`
-
-> Mac の M1・M2 チップの PC の場合、no matching manifest for linux/arm64/v8 in the manifest list entries のメッセージが表示されビルドができないことがあります。 エラーが発生する場合は、docker-compose.yml ファイルの「mysql」内に「platform」の項目を追加で記載してください
-
-```
-mysql:
-    platform: linux/x86_64(この文追加)
-    image: mysql:8.0.26
-    environment:
-```
 
 ### Laravel 環境構築
 
-1. `docker-compose exec php bash`(php コンテナ名が違う場合は適宜変更)
-2. `composer install`
-   `composer require --dev phpunit/phpunit`
-   `exit`
-3. `cp src/.env.example src/.env`
-   (.env.example ファイルから.env を作成)
-4. .env ファイルの環境変数を変更
+1. `make init`
+2. .env ファイルの環境変数を変更
 
 ```
 DB_CONNECTION=mysql
@@ -46,25 +31,7 @@ MAIL_FROM_ADDRESS=info@example.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-5. アプリケーションキーの作成
-
-```
-docker-compose exec php bash
-php artisan key:generate
-```
-
-6. マイグレーションの実行
-
-```
-php artisan migrate
-```
-
-7. シーディングの実行
-
-```
-php artisan db:seed
-exit
-```
+3. `docker-compose exec php php artisan migrate --seed`
 
 ### PHPUnit を利用したテスト用 DB を作成
 
@@ -92,18 +59,10 @@ DB_PASSWORD=root
 docker-compose exec mysql mysql -u root -p
 # パスワードは root
 CREATE DATABASE test_db;
-SHOW DATABASES;
 EXIT;
-docker-compose exec php bash
-php artisan migrate --env=testing
 ```
 
-### シンボリックリンクの作成
-
-```
-php artisan storage:link
-exit
-```
+4. `make test-migrate`
 
 ## メール認証について
 
