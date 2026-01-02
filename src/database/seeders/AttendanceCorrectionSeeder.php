@@ -34,6 +34,7 @@ class AttendanceCorrectionSeeder extends Seeder
                 'requested_changes'     => [
                     'clock_in'  => '10:00',
                     'clock_out' => '19:00',
+                    'note'      => '電車遅延のため',
                     'breaks'    => [
                         [
                             'break_start'   => '13:00',
@@ -44,8 +45,6 @@ class AttendanceCorrectionSeeder extends Seeder
 
                 'reason'                => '遅延のため',
                 'status'                => AttendanceCorrection::STATUS_PENDING,
-                'processed_by'          => null,
-                'processed_at'          => null,
             ]);
         }
     }

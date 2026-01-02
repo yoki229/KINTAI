@@ -186,7 +186,9 @@
                     </tr>
                 </table>
                 <div class="attendance-detail-form__btn-inner">
-                    @if($isPending)
+                    @if ($fromApproved)
+                        <p class="approved-message">承認済みです。</p>
+                    @elseif($isPending)
                         <p class="pending-message">・承認待ちのため修正はできません。</p>
                     @else
                         <button class="request-button" type="submit">修正</button>

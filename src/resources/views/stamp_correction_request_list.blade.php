@@ -78,17 +78,17 @@
                                 {{ $correction->created_at->format('Y/m/d') }}
                             </td>
                             <td class="list-data">
-                            @if ($user->is_admin)
                                 <a class="list-data__detail"
-                                href="{{ url('/stamp_correction_request/approve/'.$correction->id) }}">
+                                    href="{{ $user->is_admin
+                                        ? route('admin.correction.approve', $correction->id)
+                                        : route('attendance.detail', [
+                                            'id' => $correction->attendance_record_id,
+                                            'from' => $tab === 'approved' ? 'approved' : null,
+                                        ])
+                                    }}"
+                                    >
                                     詳細
                                 </a>
-                            @else
-                                <a class="list-data__detail"
-                                href="{{ url('/attendance/detail/'.$correction->attendance_record_id) }}">
-                                    詳細
-                                </a>
-                            @endif
                             </td>
                         </tr>
                     @endforeach

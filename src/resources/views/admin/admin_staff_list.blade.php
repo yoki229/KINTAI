@@ -22,23 +22,23 @@
                 <h1 class="title">スタッフ一覧</h1>
             </div>
 
-            {{-- 勤怠一覧 --}}
+            {{-- スタッフ一覧 --}}
             <div class="staff-list__list">
                 <table class="staff-list">
                     <thead>
                         <tr>
-                            <th class="list-header"></th>
+                            <th class="list-header--space"></th>
                             <th class="list-header">名前</th>
                             <th class="list-header">メールアドレス</th>
                             <th class="list-header">月次勤怠</th>
-                            <th class="list-header"></th>
+                            <th class="list-header--space"></th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @foreach ($staffs as $staff)
                             <tr>
-                                <td class="list-data"></td>
+                                <td class="list-data--space"></td>
                                 <td class="list-data">
                                     {{ $staff->name }}
                                 </td>
@@ -48,7 +48,7 @@
                                 <td class="list-data">
                                     <a class="list-data__detail" href="/admin/attendance/staff/{{ $staff->id }}">詳細</a>
                                 </td>
-                                <td class="list-data"></td>
+                                <td class="list-data--space"></td>
                             </tr>
                         @endforeach
                     </tbody>

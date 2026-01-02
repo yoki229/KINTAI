@@ -88,8 +88,8 @@ class CorrectionController extends Controller
 
             foreach ($changes['breaks'] ?? [] as $break){
                 $attendance->breaks()->create([
-                    'break_start'   => $break['start'],
-                    'break_end'     => $break['end'],
+                    'break_start'   => $break['break_start'],
+                    'break_end'     => $break['break_end'],
                 ]);
             }
 

@@ -132,7 +132,7 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面（一般ユーザー）
-    public function detail($id)
+    public function detail(Request $request, $id)
     {
         $attendance = AttendanceRecord::findOrFail($id);
         if ($attendance->user_id !== auth()->id()) {
@@ -144,10 +144,12 @@ class AttendanceController extends Controller
         // 一件分の休憩追加用
         $breaks->push(new BreakRecord());
 
+        $fromApproved = $request->query('from') === 'approved';
+
         $isPending = $attendance->is_correction_pending;
         $changes = $attendance->latestCorrection?->requested_changes ?? [];
 
-        return view('attendance_detail', compact('attendance', 'breaks', 'isPending', 'changes'));
+        return view('attendance_detail', compact('attendance', 'breaks', 'fromApproved', 'isPending', 'changes'));
     }
 
     // 勤怠詳細画面から申請（一般ユーザー）

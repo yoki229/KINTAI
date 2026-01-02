@@ -22,7 +22,7 @@ Route::middleware(['auth','verified'])->group(function () {
     // 勤怠一覧画面（一般ユーザー）
     Route::get('/attendance/list', [AttendanceController::class, 'list'])->name('attendance.month');
     // 勤怠詳細画面（一般ユーザー）
-    Route::get('/attendance/detail/{id}', [AttendanceController::class,'detail']);
+    Route::get('/attendance/detail/{id}', [AttendanceController::class,'detail'])->name('attendance.detail');
     // 勤怠詳細画面から申請（一般ユーザー）
     Route::post('/attendance/detail/{id}/correction', [AttendanceController::class,'requestCorrection']);
 });
@@ -50,7 +50,7 @@ Route::middleware(['auth:web,admin'])->group(function () {
         // スタッフ別勤怠一覧画面（管理者）
         Route::get('/admin/attendance/staff/{id}', [StaffController::class,'adminStaffDetail'])->name('admin.attendance.staff.month');
         // 修正申請承認画面（管理者）
-        Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [CorrectionController::class,'adminCorrection']);
+        Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [CorrectionController::class,'adminCorrection'])->name('admin.correction.approve');
         // 修正申請承認画面から承認（管理者）
         Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [CorrectionController::class,'adminApprove']);
     });
