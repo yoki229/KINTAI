@@ -12,16 +12,15 @@ class AttendanceCorrectionFactory extends Factory
 
     public function definition()
     {
-        $attendance = AttendanceRecord::factory()->create();
 
         return [
-            'attendance_record_id'  => $attendance->id,
-            'user_id'               => $attendance->user_id,
+            'attendance_record_id'  => AttendanceRecord::factory(),
             'status'                => AttendanceCorrection::STATUS_PENDING,
             'requested_changes'    => [
                 'clock_in'  => '10:00',
                 'clock_out' => '19:00',
             ],
+            'reason'                => '遅延のため',
         ];
     }
 }
