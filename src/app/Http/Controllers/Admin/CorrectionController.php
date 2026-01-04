@@ -65,7 +65,7 @@ class CorrectionController extends Controller
         );
     }
 
-    // 修正申請承認画面（管理者）
+    // 申請承認（管理者）
     public function adminApprove(int $attendance_correct_request_id)
     {
         $correction = AttendanceCorrection::with('attendanceRecord.breaks')
