@@ -28,11 +28,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    // リレーション
     public function attendanceRecords()
     {
         return $this->hasMany(AttendanceRecord::class);
     }
 
+    // role分け
     public function getIsAdminAttribute(): bool
     {
         return $this->role === 'admin';

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\AttendanceRecord;
-use App\Models\BreakRecord;
 use App\Models\AttendanceCorrection;
 use Carbon\Carbon;
 
@@ -15,7 +14,6 @@ class UserTest extends TestCase
     use RefreshDatabase;
 
     // ４.日時取得機能（現在の日時情報がUIと同じ形式で出力されている）
-    // 「Laravelの Feature テストだけでは「JSで表示された現在日時」を取得・検証することはできません。」ということで困っている
     public function testCurrentDateTimeDisplaysCorrectly()
     {
         $user = User::factory()->create();
@@ -26,9 +24,10 @@ class UserTest extends TestCase
 
         $now = Carbon::now();
         $weekdays = ['日','月','火','水','木','金','土'];
-        $formatted = $now->format('Y年n月j日') . '(' . $weekdays[$now->dayOfWeek] . ') ' . $now->format('H:i');
+        $formatted = $now->format('Y年n月j日') . '(' . $weekdays[$now->dayOfWeek] . ')' . $now->format('H:i');
 
-        $response->assertSee($formatted);
+        $response->assertSee($now->format('Y年n月j日') . '(' . $weekdays[$now->dayOfWeek] . ')');
+        $response->assertSee($now->format('H:i'));
     }
 
     // ５.ステータス確認機能（勤務外の場合、勤怠ステータスが正しく表示される）

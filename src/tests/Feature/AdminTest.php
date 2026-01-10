@@ -6,9 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\AttendanceRecord;
-use App\Models\BreakRecord;
 use App\Models\AttendanceCorrection;
-use Carbon\Carbon;
 
 class AdminTest extends TestCase
 {

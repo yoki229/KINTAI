@@ -29,8 +29,9 @@ class AttendanceRecord extends Model
             'finished' => '退勤済',
             default    => '不明',
         };
-}
+    }
 
+    // リレーション
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -140,6 +141,7 @@ class AttendanceRecord extends Model
                     ->latestOfMany();
     }
 
+    // アクセサ：勤怠が申請中のものかどうか判断する
     public function getIsCorrectionPendingAttribute(): bool
     {
         return $this->latestCorrection

@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Admin\AdminAttendanceController;
@@ -27,7 +25,7 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/attendance/detail/{id}/correction', [AttendanceController::class,'requestCorrection']);
 });
 
-// 一般・管理者 共通
+// 申請一覧画面（一般・管理者 共通）
 Route::middleware(['auth:web,admin'])->group(function () {
     Route::get('/stamp_correction_request/list',[CorrectionController::class, 'correctionList']);
 });
@@ -36,9 +34,10 @@ Route::middleware(['auth:web,admin'])->group(function () {
     // ログイン画面（管理者）
     Route::get('/admin/login', [AdminLoginController::class, 'adminLoginForm']);
     Route::post('/admin/login', [AdminLoginController::class, 'adminLoginPost']);
-    Route::post('/admin/logout', [AdminLoginController::class, 'adminLogout'])->name('admin.logout');;
 
     Route::middleware(['admin'])->group(function () {
+        // ログアウト処理
+        Route::post('/admin/logout', [AdminLoginController::class, 'adminLogout'])->name('admin.logout');
         // 勤怠一覧画面（管理者）
         Route::get('/admin/attendance/list', [AdminAttendanceController::class,'adminList'])->name('attendance.day');
         // 勤怠詳細画面（管理者）
@@ -49,6 +48,8 @@ Route::middleware(['auth:web,admin'])->group(function () {
         Route::get('/admin/staff/list', [StaffController::class,'adminStaffList']);
         // スタッフ別勤怠一覧画面（管理者）
         Route::get('/admin/attendance/staff/{id}', [StaffController::class,'adminStaffDetail'])->name('admin.attendance.staff.month');
+        // CSV出力用
+        Route::get('/admin/attendance/staff/{id}/csv', [StaffController::class, 'exportStaffCsv'])->name('admin.attendance.staff.csv');
         // 修正申請承認画面（管理者）
         Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [CorrectionController::class,'adminCorrection'])->name('admin.correction.approve');
         // 修正申請承認画面から承認（管理者）
@@ -63,7 +64,3 @@ Route::get('/email/{id}/{hash}',[MailController::class, 'verify'])->middleware([
 Route::get('/email/check',[MailController::class, 'emailCheck'])->name('verification.handle');
 // メール再送信処理
 Route::post('/email/resend',[MailController::class, 'resend'])->middleware(['throttle:6,1'])->name('verification.send');
-
-// CSV出力用
-
-Route::get('/admin/attendance/staff/{id}/csv', [StaffController::class, 'exportStaffCsv'])->name('admin.attendance.staff.csv');

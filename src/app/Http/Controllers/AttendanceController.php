@@ -21,7 +21,9 @@ class AttendanceController extends Controller
 
         $attendance = AttendanceRecord::forUserDate($user->id, $today)->first();
 
-        return view('attendance', compact('attendance'));
+        $now = now();
+
+        return view('attendance', compact('attendance' ,'now'));
     }
 
     // 出勤

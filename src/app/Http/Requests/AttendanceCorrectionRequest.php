@@ -14,11 +14,11 @@ class AttendanceCorrectionRequest extends FormRequest
     public function rules()
     {
         return [
-            'clock_in'          => ['nullable', 'date_format:H:i'],
-            'clock_out'         => ['nullable', 'date_format:H:i'],
-            'breaks.*.start'    => ['nullable', 'date_format:H:i'],
-            'breaks.*.end'      => ['nullable', 'date_format:H:i'],
-            'note'              => ['required', 'string'],
+            'clock_in'          => 'nullable|date_format:H:i',
+            'clock_out'         => 'nullable|date_format:H:i',
+            'breaks.*.start'    => 'nullable|date_format:H:i',
+            'breaks.*.end'      => 'nullable|date_format:H:i',
+            'note'              => 'required|string',
         ];
     }
 

@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BreakRecord;
 use App\Models\AttendanceCorrection;
-use App\Http\Requests\AttendanceCorrectionRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 
 class CorrectionController extends Controller
 {

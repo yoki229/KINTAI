@@ -29,7 +29,7 @@ class AdminAttendanceController extends Controller
         $currentDay = $day->format('Y年n月j日');
         $currentDayInput = $day->format('Y-m-d');
 
-        $users = user::with(['attendanceRecords' => function($query) use ($day) {
+        $users = User::with(['attendanceRecords' => function($query) use ($day) {
             $query->whereDate('work_date', $day)
                 ->with('breaks');
         }])->get();

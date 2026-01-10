@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
 
 class AttendanceRecordFactory extends Factory
 {

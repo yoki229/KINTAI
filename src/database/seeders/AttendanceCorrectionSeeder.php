@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\AttendanceRecord;
 use App\Models\AttendanceCorrection;
-use Carbon\Carbon;
 
 class AttendanceCorrectionSeeder extends Seeder
 {

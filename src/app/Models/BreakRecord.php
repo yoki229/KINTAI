@@ -20,6 +20,7 @@ class BreakRecord extends Model
         'break_end'   => 'datetime:H:i',
     ];
 
+    // リレーション
     public function attendance()
     {
         return $this->belongsTo(AttendanceRecord::class);

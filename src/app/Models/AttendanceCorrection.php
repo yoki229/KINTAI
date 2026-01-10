@@ -21,6 +21,7 @@ class AttendanceCorrection extends Model
     const STATUS_PENDING  = 'pending';
     const STATUS_APPROVED = 'approved';
 
+    // リレーション
     public function attendanceRecord()
     {
         return $this->belongsTo(AttendanceRecord::class);

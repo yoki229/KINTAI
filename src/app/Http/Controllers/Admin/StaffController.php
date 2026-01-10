@@ -90,7 +90,7 @@ class StaffController extends Controller
                     ]
                 );
             });
-        
+
         // CSV
         $response = new StreamedResponse(function () use ($attendances, $staff) {
             $handle = fopen('php://output', 'w');
