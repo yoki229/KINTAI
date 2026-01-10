@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceCorrectionRequest;
+use App\Models\User;
 use App\Models\AttendanceRecord;
 use App\Models\BreakRecord;
 use Carbon\Carbon;
@@ -28,10 +29,24 @@ class AdminAttendanceController extends Controller
         $currentDay = $day->format('Y年n月j日');
         $currentDayInput = $day->format('Y-m-d');
 
-        $attendances = AttendanceRecord::with('user', 'breaks')
-            ->whereDate('work_date', $day)
-            ->whereNotNull('clock_in')
-            ->get();
+        $users = user::with(['attendanceRecords' => function($query) use ($day) {
+            $query->whereDate('work_date', $day)
+                ->with('breaks');
+        }])->get();
+
+        // １日分のユーザーを表示（勤怠レコードがなければ空白表示）
+        $attendances = $users->map(function ($user) use ($day) {
+            return AttendanceRecord::firstOrCreate(
+                [
+                    'user_id'   => $user->id,
+                    'work_date' => $day->format('Y-m-d'),
+                ],
+                [
+                    'clock_in'  => null,
+                    'clock_out' => null,
+                ]
+            );
+        });
 
         return view('admin.admin_attendance_list', compact(
             'attendances', 'prevDay', 'nextDay', 'currentDay', 'currentDayInput'

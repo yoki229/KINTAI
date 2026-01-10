@@ -620,6 +620,7 @@ class UserTest extends TestCase
             'requested_changes'     =>
             [
                 ['break_start' => '12:00', 'break_end' => '13:00'],
+                'note'         => '修正申請テスト',
             ],
             'reason'                => '修正申請テスト',
             'status'                => AttendanceCorrection::STATUS_APPROVED,

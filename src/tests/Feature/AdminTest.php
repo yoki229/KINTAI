@@ -33,13 +33,17 @@ class AdminTest extends TestCase
         ]);
         $response->assertSessionHasNoErrors();
 
-        // ＤＢに保存
+        // ＤＢに保存されているのを確認
         $this->assertDatabaseHas('attendance_corrections', [
             'attendance_record_id' => $attendance->id,
             'user_id' => $user->id,
             'status' => AttendanceCorrection::STATUS_PENDING,
         ]);
-        $correction = AttendanceCorrection::first();
+
+        $correction = AttendanceCorrection::where(
+            'attendance_record_id',
+            $attendance->id
+        )->firstOrFail();
 
         // 管理者ユーザーでログインし、確認する
         $this->actingAs($admin, 'admin');

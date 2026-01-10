@@ -63,3 +63,7 @@ Route::get('/email/{id}/{hash}',[MailController::class, 'verify'])->middleware([
 Route::get('/email/check',[MailController::class, 'emailCheck'])->name('verification.handle');
 // メール再送信処理
 Route::post('/email/resend',[MailController::class, 'resend'])->middleware(['throttle:6,1'])->name('verification.send');
+
+// CSV出力用
+
+Route::get('/admin/attendance/staff/{id}/csv', [StaffController::class, 'exportStaffCsv'])->name('admin.attendance.staff.csv');

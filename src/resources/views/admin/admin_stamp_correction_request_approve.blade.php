@@ -109,7 +109,7 @@
                         <th class="attendance-detail-form__label">備考</th>
                         <td class="attendance-detail-form__data">
                             <div class="plain-text--note">
-                                {{ $changes['note'] ?? $attendance->note ?? '' }}
+                                {{ $correction->reason }}
                             </div>
                         </td>
                         <td class="space"></td>
