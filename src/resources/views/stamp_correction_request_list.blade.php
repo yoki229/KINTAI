@@ -63,7 +63,7 @@
                     @foreach ($corrections as $correction)
                         <tr>
                             <td class="list-data">
-                                {{ $correction->status === 'pending' ? '未承待ち' : '承認済み' }}
+                                {{ $correction->status === 'pending' ? '承認待ち' : '承認済み' }}
                             </td>
                             <td class="list-data">
                                 {{ $correction->user->name }}

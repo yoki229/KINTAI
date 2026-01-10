@@ -90,6 +90,15 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- CSV出力ボタン --}}
+        <div class="attendance-list__csv">
+            <a
+                href="{{ route('admin.attendance.staff.csv', ['id' => $staff->id, 'month' => $currentMonthInput]) }}"
+                class="csv-button">
+                CSV出力
+            </a>
+        </div>
     </div>
 </div>
 

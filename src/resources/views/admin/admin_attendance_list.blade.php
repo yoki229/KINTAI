@@ -45,7 +45,7 @@
                     </div>
 
                     <a class="date-menu__day-link" href="{{ route('attendance.day', ['day' => $nextDay]) }}">
-                        翌月 <i class="fa-sharp fa-solid fa-arrow-right"></i>
+                        翌日 <i class="fa-sharp fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
