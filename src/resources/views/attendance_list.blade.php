@@ -34,9 +34,11 @@
                     <div class="date-menu__center">
                         <div class="month-picker">
                             <form method="get" action="{{ route('attendance.month') }}">
-                                <input class="month-picker__icon" type="month" name="month"
-                                    value="{{ $currentMonthInput }}"
-                                    onchange="this.form.submit()">
+                                <label class="month-picker__icon">
+                                    <input class="month-picker__input" type="month" name="month"
+                                        value="{{ $currentMonthInput }}"
+                                        onchange="this.form.submit()">
+                                </label>
                             </form>
                         </div>
                         <span class="month">

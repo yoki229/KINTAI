@@ -34,9 +34,11 @@
                     <div class="date-menu__center">
                         <div class="day-picker">
                             <form method="get" action="{{ route('attendance.day') }}">
-                                <input class="day-picker__icon" type="date" name="day"
-                                    value="{{ $currentDayInput }}"
-                                    onchange="this.form.submit()">
+                                <label class="day-picker__icon">
+                                    <input class="day-picker__input" type="date" name="day"
+                                        value="{{ $currentDayInput }}"
+                                        onchange="this.form.submit()">
+                                </label>
                             </form>
                         </div>
                         <span class="day">
