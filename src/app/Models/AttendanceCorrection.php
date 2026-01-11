@@ -32,6 +32,12 @@ class AttendanceCorrection extends Model
         return $this->belongsTo(User::class);
     }
 
+    // 承認した管理者を取得するなら使う(今回は未使用)
+    public function processedBy()
+    {
+        return $this->belongsTo(User::class, 'processed_by');
+    }
+
     // 切り替えタブ用スコープ
     public function scopePending($query)
     {

@@ -34,6 +34,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AttendanceRecord::class);
     }
 
+    public function attendanceCorrections()
+    {
+        return $this->hasMany(AttendanceCorrection::class);
+    }
+
+    // 管理者として処理した申請を取得するなら使う(今回は未使用)
+    public function processedCorrections()
+    {
+        return $this->hasMany(AttendanceCorrection::class, 'processed_by');
+    }
+
     // role分け
     public function getIsAdminAttribute(): bool
     {
