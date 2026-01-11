@@ -75,6 +75,34 @@ EXIT;
 - Laravel 8.6
 - MySQL 8.0.26
 
+## テストアカウント
+name: 管理者ユーザー
+email: hanako.s@example.com
+password: password
+-------------------------
+name: 一般ユーザー
+email: reina.n@coachtech.com
+password: password
+-------------------------
+
+## テーブル仕様
+
+### usersテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| name | string |  |  | ◯ |  |
+| email | string |  | ◯ | ◯ |  |
+| email_verified_at | timestamp |  |  |  |  |
+| password | string |  |  | ◯ |  |
+| role | string |  |  | ◯ |  |
+| remember_token | rememberToken |  |  | ◯ |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+![テーブル2](readme-assets/table_2.png)
+![テーブル3](readme-assets/table_3.png)
+
 ## ER 図
 
 ![ER図](readme-assets/table.drawio.png)
