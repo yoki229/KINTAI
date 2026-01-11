@@ -66,8 +66,8 @@ EXIT;
 
 ## メール認証について
 
-メール認証機能は mailHog を使用しています。
-メール送信後は URL localhost:8025 から確認できるようにしております。
+メール認証機能は mailHog を使用しています。  
+メール送信後は URL localhost:8025 から確認できるようにしております。  
 
 ## 使用技術
 
@@ -76,13 +76,13 @@ EXIT;
 - MySQL 8.0.26
 
 ## テストアカウント
-name: 管理者ユーザー
-email: hanako.s@example.com
-password: password
+name: 管理者ユーザー  
+email: hanako.s@example.com  
+password: password  
 -------------------------
-name: 一般ユーザー
-email: reina.n@coachtech.com
-password: password
+name: 一般ユーザー  
+email: reina.n@coachtech.com  
+password: password  
 -------------------------
 
 ## テーブル仕様
@@ -96,12 +96,48 @@ password: password
 | email_verified_at | timestamp |  |  |  |  |
 | password | string |  |  | ◯ |  |
 | role | string |  |  | ◯ |  |
-| remember_token | rememberToken |  |  | ◯ |  |
+| remember_token | string(100) |  |  | ◯ |  |
 | created_at | timestamp |  |  |  |  |
 | updated_at | timestamp |  |  |  |  |
 
-![テーブル2](readme-assets/table_2.png)
-![テーブル3](readme-assets/table_3.png)
+### AttendanceRecordsテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| user_id | unsigned bigint |  |  | ◯ | users(id) |
+| work_date | date |  |  | ◯ |  |
+| clock_in | time |  |  |  |  |
+| clock_out | time |  |  |  |  |
+| status | string |  |  | ◯ |  |
+| note | text |  |  |  |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+#### 制約
+- user_id と work_date の組み合わせでユニーク制約あり（同一ユーザーの同日重複防止）
+
+### AttendanceCorrectionsテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| attendance_record_id | unsigned bigint |  |  | ◯ | attendance_records(id) |
+| user_id | unsigned bigint |  |  | ◯ | users(id) |
+| requested_changes | json |  |  | ◯ |  |
+| reason | text |  |  |  |  |
+| status | string |  |  | ◯ |  |
+| processed_by | unsigned bigint |  |  |  | users(id) |
+| processed_at | timestamp |  |  |  |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
+
+### BreakRecordsテーブル
+| カラム名 | 型 | primary key | unique key | not null | foreign key |
+| --- | --- | --- | --- | --- | --- |
+| id | unsigned bigint | ◯ |  | ◯ |  |
+| attendance_record_id | unsigned bigint |  |  | ◯ | attendance_records(id) |
+| break_start | time |  |  | ◯ |  |
+| break_end | time |  |  |  |  |
+| created_at | timestamp |  |  |  |  |
+| updated_at | timestamp |  |  |  |  |
 
 ## ER 図
 
@@ -109,14 +145,14 @@ password: password
 
 ## 画面仕様について
 
-アプリの〈申請一覧画面〉では
-承認済みタブから詳細を押下しページ推移した際、
-そこにまた押下できるボタンが表示されていることに違和感があったため
+アプリの〈申請一覧画面〉では  
+承認済みタブから詳細を押下しページ推移した際、  
+そこにまた押下できるボタンが表示されていることに違和感があったため  
 
 - 管理者ユーザー ： 「承認」ボタン → 「承認済みです。」のテキスト
 - 一般ユーザー ： 「修正」ボタン → 「承認済みです。」のテキスト
 
-が表示されるように変更しております。
+が表示されるように変更しております。  
 
 ## URL
 
