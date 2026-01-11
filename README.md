@@ -75,12 +75,6 @@ EXIT;
 - Laravel 8.6
 - MySQL 8.0.26
 
-## テーブル仕様
-
-![テーブル1](readme-assets/table_1.png)
-![テーブル2](readme-assets/table_2.png)
-![テーブル3](readme-assets/table_3.png)
-
 ## ER 図
 
 ![ER図](readme-assets/table.drawio.png)
