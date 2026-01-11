@@ -39,12 +39,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AttendanceCorrection::class);
     }
 
-    // 管理者として処理した申請を取得するなら使う(今回は未使用)
-    public function processedCorrections()
-    {
-        return $this->hasMany(AttendanceCorrection::class, 'processed_by');
-    }
-
     // role分け
     public function getIsAdminAttribute(): bool
     {
@@ -54,5 +48,24 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getIsUserAttribute()
     {
         return $this->role === 'user';
+    }
+
+    // 「今日」の勤怠を取得するリレーション
+    public function todayAttendance()
+    {
+        return $this->hasOne(AttendanceRecord::class)
+            ->whereDate('work_date', today());
+    }
+
+    // アクセサ：今日の勤怠ラベルを取得
+    public function getAttendanceStatusAttribute()
+    {
+        return $this->todayAttendance?->status_label ?? '勤務外';
+    }
+
+    // 管理者として処理した申請を取得するなら使う(今回は未使用)
+    public function processedCorrections()
+    {
+        return $this->hasMany(AttendanceCorrection::class, 'processed_by');
     }
 }

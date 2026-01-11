@@ -18,7 +18,7 @@
 
     <div class="attendance__inner">
         <p class="status-label">
-            {{ $attendance->status_label ?? '勤務外' }}
+            {{ Auth::user()->attendance_status }}
         </p>
 
         <div class="clock">

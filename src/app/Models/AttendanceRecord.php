@@ -20,17 +20,6 @@ class AttendanceRecord extends Model
         'clock_out' => 'datetime:H:i',
     ];
 
-    public function getStatusLabelAttribute()
-    {
-        return match ($this->status) {
-            'off_work' => '勤務外',
-            'working'  => '出勤中',
-            'on_break' => '休憩中',
-            'finished' => '退勤済',
-            default    => '不明',
-        };
-    }
-
     // リレーション
     public function user()
     {
@@ -60,7 +49,19 @@ class AttendanceRecord extends Model
         return $query->where('user_id', $userId)->where('work_date', $workDate);
     }
 
-    // 出勤しているかどうか
+    // アクセサ：statusの日本語取得
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status) {
+            'off_work' => '勤務外',
+            'working'  => '出勤中',
+            'on_break' => '休憩中',
+            'finished' => '退勤済',
+            default    => '勤務外',
+        };
+    }
+
+    // アクセサ：出勤しているかどうか
     public function getHasWorkedAttribute()
     {
         return !is_null($this->clock_in) && !is_null($this->clock_out);
