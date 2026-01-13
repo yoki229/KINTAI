@@ -118,18 +118,18 @@
                             <div class="form__clock-inputs">
                                 @if($isPending)
                                     <span class="plain-text">
-                                        {{ $changes['breaks'][$index]['start'] ?? $break->break_start_formatted ?? '' }}
+                                        {{ $changes['breaks'][$index]['break_start'] ?? $break->break_start_formatted ?? '' }}
                                     </span>
                                     <span class="plain-text">～</span>
                                     <span class="plain-text">
-                                        {{ $changes['breaks'][$index]['end'] ?? $break->break_end_formatted ?? '' }}
+                                        {{ $changes['breaks'][$index]['break_end'] ?? $break->break_end_formatted ?? '' }}
                                     </span>
                                 @else
                                     <div class="clock-inputs__item">
                                         <input
                                             class="form__clock-input"
                                             type="time"
-                                            name="breaks[{{ $index }}][start]"
+                                            name="breaks[{{ $index }}][break_start]"
                                             @if(old("breaks.$index.start") !== null)
                                                 value="{{ old("breaks.$index.start") }}"
                                             @elseif($break->break_start)
@@ -142,7 +142,7 @@
                                         <input
                                             class="form__clock-input"
                                             type="time"
-                                            name="breaks[{{ $index }}][end]"
+                                            name="breaks[{{ $index }}][break_end]"
                                             @if(old("breaks.$index.end") !== null)
                                                 value="{{ old("breaks.$index.end") }}"
                                             @elseif($break->break_end)

@@ -92,11 +92,11 @@
                         <td class="attendance-detail-form__data">
                             <div class="form__clock-inputs">
                                 <span class="plain-text">
-                                {{ $changes['breaks'][$index]['start'] ?? $break->break_start_formatted ?? '' }}
+                                {{ $changes['breaks'][$index]['break_start'] ?? $break->break_start_formatted ?? '' }}
                                 </span>
                                 <span class="plain-text">～</span>
                                 <span class="plain-text">
-                                {{ $changes['breaks'][$index]['end'] ?? $break->break_end_formatted ?? '' }}
+                                {{ $changes['breaks'][$index]['break_end'] ?? $break->break_end_formatted ?? '' }}
                                 </span>
                             </div>
                         </td>

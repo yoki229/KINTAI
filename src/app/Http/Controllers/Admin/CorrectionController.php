@@ -84,6 +84,14 @@ class CorrectionController extends Controller
             $attendance->breaks()->delete();
 
             foreach ($changes['breaks'] ?? [] as $break){
+                if (
+                    !isset($break['break_start'], $break['break_end']) ||
+                    $break['break_start'] === '' ||
+                    $break['break_end'] === ''
+                ) {
+                    continue; 
+                }
+
                 $attendance->breaks()->create([
                     'break_start'   => $break['break_start'],
                     'break_end'     => $break['break_end'],

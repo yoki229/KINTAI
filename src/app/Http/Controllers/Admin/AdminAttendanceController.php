@@ -81,10 +81,10 @@ class AdminAttendanceController extends Controller
         $attendance->breaks()->delete();
         if($request->breaks){
             foreach($request->breaks as $break){
-                if(!empty($break['start']) || !empty($break['end'])){
+                if(!empty($break['break_start']) || !empty($break['break_end'])){
                     $attendance->breaks()->create([
-                        'break_start'   => $break['start'] ?: null,
-                        'break_end'     => $break['end'] ?: null,
+                        'break_start'   => $break['break_start'] ?: null,
+                        'break_end'     => $break['break_end'] ?: null,
                     ]);
                 }
             }
