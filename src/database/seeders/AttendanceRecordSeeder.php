@@ -11,11 +11,13 @@ class AttendanceRecordSeeder extends Seeder
 {
     public function run()
     {
+        AttendanceRecord::query()->delete();
+
         $users = User::where('role', 'user')->get();
 
-        // 今日から過去3か月分
-        $startDate = Carbon::today()->subMonths(3);
-        $endDate   = Carbon::today();
+        // 昨日から過去3か月分（今日のデータは作らない）
+        $endDate   = Carbon::yesterday();
+        $startDate = $endDate->copy()->subMonths(3);
 
         foreach ($users as $user) {
 

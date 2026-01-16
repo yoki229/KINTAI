@@ -11,7 +11,12 @@
 ### Laravel 環境構築
 
 1. `make init`
-2. .env ファイルの環境変数を変更
+    「Command 'make' not found」となる場合は  
+    - `sudo apt update`
+    - `sudo apt install make`
+    の後に「make init」してください。  
+2. `code .`
+3. .env ファイルの環境変数を変更
 
 ```
 DB_CONNECTION=mysql
@@ -31,7 +36,7 @@ MAIL_FROM_ADDRESS=info@example.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-3. `docker-compose exec php php artisan migrate --seed`
+4. `docker-compose exec php php artisan migrate --seed`
 
 ### PHPUnit を利用したテスト用 DB を作成
 
@@ -63,6 +68,11 @@ EXIT;
 ```
 
 4. `make test-migrate`
+5. 以上のセットアップで権限のエラーが発生する場合は
+```
+sudo chmod -R 777 src/*
+```
+入力、使用してください。  
 
 ## メール認証について
 
