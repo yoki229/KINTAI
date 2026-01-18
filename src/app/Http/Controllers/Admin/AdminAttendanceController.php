@@ -26,7 +26,8 @@ class AdminAttendanceController extends Controller
         $nextDay = $day->copy()->addDay()->format('Y-m-d');
 
         // 前日・翌日（表示用）
-        $currentDay = $day->format('Y年n月j日');
+        $titleDay = $day->format('Y年n月j日');
+        $currentDay = $day->format('Y/m/d');
         $currentDayInput = $day->format('Y-m-d');
 
         $users = User::with(['attendanceRecords' => function($query) use ($day) {
@@ -49,7 +50,7 @@ class AdminAttendanceController extends Controller
         });
 
         return view('admin.admin_attendance_list', compact(
-            'attendances', 'prevDay', 'nextDay', 'currentDay', 'currentDayInput'
+            'attendances', 'prevDay', 'nextDay', 'titleDay', 'currentDay', 'currentDayInput'
         ));
     }
 

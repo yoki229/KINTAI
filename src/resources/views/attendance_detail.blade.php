@@ -130,8 +130,8 @@
                                             class="form__clock-input"
                                             type="time"
                                             name="breaks[{{ $index }}][break_start]"
-                                            @if(old("breaks.$index.start") !== null)
-                                                value="{{ old("breaks.$index.start") }}"
+                                            @if(old("breaks.$index.break_start") !== null)
+                                                value="{{ old("breaks.$index.break_start") }}"
                                             @elseif($break->break_start)
                                                 value="{{ $break->break_start_formatted }}"
                                             @endif
@@ -143,8 +143,8 @@
                                             class="form__clock-input"
                                             type="time"
                                             name="breaks[{{ $index }}][break_end]"
-                                            @if(old("breaks.$index.end") !== null)
-                                                value="{{ old("breaks.$index.end") }}"
+                                            @if(old("breaks.$index.break_end") !== null)
+                                                value="{{ old("breaks.$index.break_end") }}"
                                             @elseif($break->break_end)
                                                 value="{{ $break->break_end_formatted }}"
                                             @endif
@@ -153,10 +153,10 @@
                                 @endif
                             </div>
                             <div class="form__error-message">
-                                @error("breaks.$index.start")
+                                @error("breaks.$index.break_start")
                                     <p class="error-message">{{ $message }}</p>
                                 @enderror
-                                @error("breaks.$index.end")
+                                @error("breaks.$index.break_end")
                                     <p class="error-message">{{ $message }}</p>
                                 @enderror
                             </div>

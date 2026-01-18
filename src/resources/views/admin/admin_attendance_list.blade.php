@@ -21,7 +21,7 @@
         <div class="attendance-list-content__inner">
             {{-- タイトル --}}
             <div class="attendance-list__title">
-                <h1 class="title">{{ $currentDay }}の勤怠</h1>
+                <h1 class="title">{{ $titleDay }}の勤怠</h1>
             </div>
 
             {{-- 月日メニュー --}}

@@ -16,8 +16,8 @@ class AttendanceCorrectionRequest extends FormRequest
         return [
             'clock_in'          => 'nullable|date_format:H:i',
             'clock_out'         => 'nullable|date_format:H:i',
-            'breaks.*.start'    => 'nullable|date_format:H:i',
-            'breaks.*.end'      => 'nullable|date_format:H:i',
+            'breaks.*.break_start'    => 'nullable|date_format:H:i',
+            'breaks.*.break_end'      => 'nullable|date_format:H:i',
             'note'              => 'required|string',
         ];
     }
@@ -66,10 +66,10 @@ class AttendanceCorrectionRequest extends FormRequest
             foreach ($this->breaks ?? [] as $index => $break) {
                 $this->validateBreak(
                     $validator,
-                    $break['start'] ?? null,
-                    $break['end'] ?? null,
-                    "breaks.$index.start",
-                    "breaks.$index.end",
+                    $break['break_start'] ?? null,
+                    $break['break_end'] ?? null,
+                    "breaks.$index.break_start",
+                    "breaks.$index.break_end",
                     $clockIn,
                     $clockOut
                 );
@@ -82,8 +82,8 @@ class AttendanceCorrectionRequest extends FormRequest
         return [
             'clock_in.date_format'       => '出勤時間の形式が正しくありません',
             'clock_out.date_format'      => '退勤時間の形式が正しくありません',
-            'breaks.*.start.date_format' => '休憩開始の形式が正しくありません',
-            'breaks.*.end.date_format'   => '休憩終了の形式が正しくありません',
+            'breaks.*.break_start.date_format' => '休憩開始の形式が正しくありません',
+            'breaks.*.break_end.date_format'   => '休憩終了の形式が正しくありません',
             'note.required'              => '備考を記入してください',
         ];
     }
